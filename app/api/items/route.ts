@@ -1,0 +1,126 @@
+import { db } from '@/app/lib/db';
+import { NextResponse } from 'next/server';
+import { getUserId } from '@/app/lib/auth';
+
+export async function GET(request: Request) {
+  const userId = await getUserId();
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const result = await db.query(
+    `SELECT
+      sa.name as storage_area_name,
+      ig.group_name,
+      i.id,
+      i.item_name,
+      i.quantity,
+      i.date_added,
+      i.expiry_date
+    FROM items i
+    JOIN storage_areas sa ON i.storage_area_id = sa.id
+    LEFT JOIN item_groups ig ON i.group_id = ig.id
+    WHERE i.user_id = $1
+    ORDER BY sa.name, ig.group_name, i.item_name`,
+    [userId]
+  );
+
+  const itemsByStorageArea = result.rows.reduce((acc: any, item: any) => {
+    const { storage_area_name, group_name, ...itemData } = item;
+    if (!acc[storage_area_name]) {
+      acc[storage_area_name] = {};
+    }
+    if (!acc[storage_area_name][group_name]) {
+      acc[storage_area_name][group_name] = [];
+    }
+    acc[storage_area_name][group_name].push(itemData);
+    return acc;
+  }, {});
+
+  return NextResponse.json(itemsByStorageArea);
+}
+
+export async function POST(request: Request) {
+  const userId = await getUserId();
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const data = await request.json();
+  await db.query(
+    `INSERT INTO items (item_name, quantity, date_added, expiry_date, barcode, group_id, user_id, storage_area_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+    [
+      data.itemName,
+      data.quantity,
+      data.dateAdded,
+      data.expiryDate || null,
+      data.barcode || null,
+      data.groupId || null,
+      userId,
+      data.storageAreaId,
+    ]
+  );
+  return new Response(null, { status: 204 });
+}
+
+export async function PUT(request: Request) {
+  const userId = await getUserId();
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const data = await request.json();
+  const { itemId, quantity, groupId } = data;
+
+  const currentItem = await db.query(`SELECT group_id, original_group_id FROM items WHERE id = $1`, [itemId]);
+  const { group_id: currentGroupId, original_group_id: originalGroupId } = currentItem.rows[0];
+
+  if (quantity === 0) {
+    let notInStorageGroup = await db.query(
+      `SELECT id FROM item_groups WHERE group_name = 'Not in Storage' AND user_id = $1`,
+      [userId]
+    );
+
+    let notInStorageGroupId;
+    if (notInStorageGroup.rows.length === 0) {
+      const newGroup = await db.query(
+        `INSERT INTO item_groups (group_name, user_id) VALUES ('Not in Storage', $1) RETURNING id`,
+        [userId]
+      );
+      notInStorageGroupId = newGroup.rows[0].id;
+    } else {
+      notInStorageGroupId = notInStorageGroup.rows[0].id;
+    }
+
+    await db.query(
+      `UPDATE items SET quantity = 0, group_id = $1, original_group_id = $2 WHERE id = $3`,
+      [notInStorageGroupId, currentGroupId, itemId]
+    );
+  } else {
+    if (groupId) {
+      await db.query(
+        `UPDATE items SET quantity = $1, group_id = $2, original_group_id = NULL WHERE id = $3`,
+        [quantity, groupId, itemId]
+      );
+    } else if (originalGroupId) {
+      await db.query(
+        `UPDATE items SET quantity = $1, group_id = $2, original_group_id = NULL WHERE id = $3`,
+        [quantity, originalGroupId, itemId]
+      );
+    } else {
+      await db.query(`UPDATE items SET quantity = $1 WHERE id = $2`, [
+        quantity,
+        itemId,
+      ]);
+    }
+  }
+
+  return new Response(null, { status: 204 });
+}
+
+export async function DELETE(request: Request) {
+  const data = await request.json();
+  await db.query(`DELETE FROM items WHERE id = $1`, [data.itemId]);
+  return new Response(null, { status: 204 });
+}

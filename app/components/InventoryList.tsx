@@ -3,22 +3,10 @@
 import { useState } from "react";
 import { useStore } from "./StoreProvider";
 import SelectGroupModal from "./SelectGroupModal";
-
-interface Item {
-  id: string;
-  item_name: string;
-  quantity: number;
-  date_added: string;
-  expiry_date: string | null;
-  group_name: string;
-}
+import { Item, ItemsByStorageArea } from "@/app/lib/definitions";
 
 interface InventoryListProps {
-  itemsByStorageArea: {
-    [key: string]: {
-      [key: string]: Item[];
-    };
-  };
+  itemsByStorageArea: ItemsByStorageArea;
 }
 
 export default function InventoryList({ itemsByStorageArea }: InventoryListProps) {

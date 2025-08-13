@@ -1,37 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
-
-interface Item {
-  id: string;
-  item_name: string;
-  quantity: number;
-  date_added: string;
-  expiry_date: string | null;
-}
-
-interface StorageArea {
-  id: string;
-  name: string;
-}
-
-interface Group {
-  id: string;
-  group_name: string;
-  storage_area_ids: string[];
-}
-
-interface ItemsByStorageArea {
-  [key: string]: {
-    [key: string]: Item[];
-  };
-}
+import { User, ItemsByStorageArea, StorageArea, Group } from "@/app/lib/definitions";
 
 interface StoreContextType {
   itemsByStorageArea: ItemsByStorageArea;

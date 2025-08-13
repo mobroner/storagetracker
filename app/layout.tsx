@@ -63,7 +63,7 @@ export default async function RootLayout({
       }
       acc[storage_area_name][effectiveGroupName].push(itemData);
       return acc;
-    }, {} as any);
+    }, {});
 
     const storageAreasResult = await db.query(`SELECT * FROM storage_areas WHERE user_id = $1 ORDER BY name`, [userId]);
     storageAreas = storageAreasResult.rows;

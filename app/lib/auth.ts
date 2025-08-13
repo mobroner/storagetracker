@@ -13,7 +13,7 @@ export async function getUserId() {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
     const { payload } = await jwtVerify(token.value, secret);
     return payload.userId as string;
-  } catch (error) {
+  } catch {
     return null;
   }
 }

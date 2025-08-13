@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { getUserId } from '@/app/lib/auth';
 import { NextRequest } from 'next/server';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const userId = await getUserId();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

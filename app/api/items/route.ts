@@ -2,7 +2,31 @@ import { db } from '@/app/lib/db';
 import { NextResponse } from 'next/server';
 import { getUserId } from '@/app/lib/auth';
 
-export async function GET(request: Request) {
+interface ItemFromDB {
+  storage_area_name: string;
+  group_name: string | null;
+  id: number;
+  item_name: string;
+  quantity: number;
+  date_added: string;
+  expiry_date: string | null;
+}
+
+interface ItemData {
+    id: number;
+    item_name: string;
+    quantity: number;
+    date_added: string;
+    expiry_date: string | null;
+}
+
+interface ItemsByStorageArea {
+  [storageAreaName: string]: {
+    [groupName: string]: ItemData[];
+  };
+}
+
+export async function GET() {
   const userId = await getUserId();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -25,17 +49,18 @@ export async function GET(request: Request) {
     [userId]
   );
 
-  const itemsByStorageArea = result.rows.reduce((acc: any, item: any) => {
+  const itemsByStorageArea = result.rows.reduce((acc: ItemsByStorageArea, item: ItemFromDB) => {
     const { storage_area_name, group_name, ...itemData } = item;
     if (!acc[storage_area_name]) {
       acc[storage_area_name] = {};
     }
-    if (!acc[storage_area_name][group_name]) {
-      acc[storage_area_name][group_name] = [];
+    const effectiveGroupName = group_name || 'Ungrouped';
+    if (!acc[storage_area_name][effectiveGroupName]) {
+      acc[storage_area_name][effectiveGroupName] = [];
     }
-    acc[storage_area_name][group_name].push(itemData);
+    acc[storage_area_name][effectiveGroupName].push(itemData);
     return acc;
-  }, {});
+  }, {} as ItemsByStorageArea);
 
   return NextResponse.json(itemsByStorageArea);
 }
@@ -77,7 +102,7 @@ export async function PUT(request: Request) {
   const { group_id: currentGroupId, original_group_id: originalGroupId } = currentItem.rows[0];
 
   if (quantity === 0) {
-    let notInStorageGroup = await db.query(
+    const notInStorageGroup = await db.query(
       `SELECT id FROM item_groups WHERE group_name = 'Not in Storage' AND user_id = $1`,
       [userId]
     );

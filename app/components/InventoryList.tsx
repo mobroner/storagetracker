@@ -37,7 +37,7 @@ export default function InventoryList({ itemsByStorageArea }: InventoryListProps
   };
 
   async function updateQuantity(itemId: string, newQuantity: number) {
-    const allItems: Item[] = Object.values(itemsByStorageArea).flatMap((groups: any) => Object.values(groups).flat()) as Item[];
+    const allItems: Item[] = Object.values(itemsByStorageArea).flatMap((groups) => Object.values(groups).flat());
     const item = allItems.find((item: Item) => item.id === itemId);
 
     if (item && item.quantity === 0 && newQuantity > 0) {
@@ -85,7 +85,7 @@ export default function InventoryList({ itemsByStorageArea }: InventoryListProps
         />
       )}
       {Object.entries(itemsByStorageArea).map(([storageArea, groups]) => {
-        const hasItemsInStorageArea = Object.values(groups).some((items: any) => items.length > 0);
+        const hasItemsInStorageArea = Object.values(groups).some((items: Item[]) => items.length > 0);
 
         if (!hasItemsInStorageArea) {
           return null;

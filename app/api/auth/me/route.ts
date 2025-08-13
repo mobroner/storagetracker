@@ -1,8 +1,8 @@
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getUserId } from '@/app/lib/auth';
 import { db } from '@/app/lib/db';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const userId = await getUserId();
 
   if (!userId) {

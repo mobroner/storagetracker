@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 interface User {
   id: string;
@@ -8,10 +8,35 @@ interface User {
   email: string;
 }
 
+interface Item {
+  id: string;
+  item_name: string;
+  quantity: number;
+  date_added: string;
+  expiry_date: string | null;
+}
+
+interface StorageArea {
+  id: string;
+  name: string;
+}
+
+interface Group {
+  id: string;
+  group_name: string;
+  storage_area_ids: string[];
+}
+
+interface ItemsByStorageArea {
+  [key: string]: {
+    [key: string]: Item[];
+  };
+}
+
 interface StoreContextType {
-  itemsByStorageArea: any;
-  storageAreas: any[];
-  groups: any[];
+  itemsByStorageArea: ItemsByStorageArea;
+  storageAreas: StorageArea[];
+  groups: Group[];
   loading: boolean;
   user: User | null;
   login: (user: User) => void;
@@ -35,15 +60,15 @@ export function StoreProvider({
 }: {
   children: React.ReactNode;
   initialData: {
-    itemsByStorageArea: any;
-    storageAreas: any[];
-    groups: any[];
+    itemsByStorageArea: ItemsByStorageArea;
+    storageAreas: StorageArea[];
+    groups: Group[];
     user: User | null;
   };
 }) {
-  const [itemsByStorageArea, setItemsByStorageArea] = useState(initialData.itemsByStorageArea);
-  const [storageAreas, setStorageAreas] = useState(initialData.storageAreas);
-  const [groups, setGroups] = useState(initialData.groups);
+  const [itemsByStorageArea, setItemsByStorageArea] = useState<ItemsByStorageArea>(initialData.itemsByStorageArea);
+  const [storageAreas, setStorageAreas] = useState<StorageArea[]>(initialData.storageAreas);
+  const [groups, setGroups] = useState<Group[]>(initialData.groups);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(initialData.user);
 

@@ -52,17 +52,18 @@ export default async function RootLayout({
       [userId]
     );
 
-    itemsByStorageArea = itemsResult.rows.reduce((acc: any, item: any) => {
+    itemsByStorageArea = itemsResult.rows.reduce((acc, item) => {
       const { storage_area_name, group_name, ...itemData } = item;
+      const effectiveGroupName = group_name || 'Ungrouped';
       if (!acc[storage_area_name]) {
         acc[storage_area_name] = {};
       }
-      if (!acc[storage_area_name][group_name]) {
-        acc[storage_area_name][group_name] = [];
+      if (!acc[storage_area_name][effectiveGroupName]) {
+        acc[storage_area_name][effectiveGroupName] = [];
       }
-      acc[storage_area_name][group_name].push(itemData);
+      acc[storage_area_name][effectiveGroupName].push(itemData);
       return acc;
-    }, {});
+    }, {} as any);
 
     const storageAreasResult = await db.query(`SELECT * FROM storage_areas WHERE user_id = $1 ORDER BY name`, [userId]);
     storageAreas = storageAreasResult.rows;

@@ -4,25 +4,9 @@ import { useRouter } from "next/navigation";
 import { useState, useMemo } from "react";
 import { useStore } from "./StoreProvider";
 
-interface StorageArea {
-  id: string;
-  name: string;
-}
-
-interface Group {
-  id: string;
-  group_name: string;
-  storage_area_ids: string[];
-}
-
-interface AddItemFormProps {
-  storageAreas: StorageArea[];
-  groups: Group[];
-}
-
-export default function AddItemForm({ storageAreas, groups }: AddItemFormProps) {
+export default function AddItemForm() {
   const router = useRouter();
-  const { refreshData } = useStore();
+  const { storageAreas, groups, refreshData } = useStore();
   const [selectedStorageArea, setSelectedStorageArea] = useState<string>('');
 
   const filteredGroups = useMemo(() => {

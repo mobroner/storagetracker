@@ -7,13 +7,13 @@ import ManageStorageAreas from "./components/ManageStorageAreas";
 import { useStore } from "./components/StoreProvider";
 
 export default function Home() {
-  const { itemsByStorageArea, storageAreas, groups } = useStore();
+  const { itemsByStorageArea } = useStore();
 
   return (
     <main className="container mx-auto p-8">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-2">
-          <AddItemForm storageAreas={storageAreas} groups={groups} />
+          <AddItemForm />
           <InventoryList itemsByStorageArea={itemsByStorageArea} />
         </div>
         <div>

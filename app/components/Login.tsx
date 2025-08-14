@@ -27,11 +27,14 @@ export default function Login() {
       });
 
       const responseData = await response.json();
+      console.log("Client: Response received", responseData);
 
       if (response.ok) {
+        console.log("Client: Login successful, calling login() and router.push('/')");
         const { user } = responseData;
         login(user);
         router.push("/");
+        console.log("Client: router.push('/') called");
       } else {
         setError(responseData.error || "An unknown error occurred");
       }

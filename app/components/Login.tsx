@@ -15,11 +15,9 @@ export default function Login() {
     event.preventDefault();
     setIsSubmitting(true);
     setError(null);
-    console.log("Form submitted");
 
     const formData = new FormData(event.currentTarget);
     const data = Object.fromEntries(formData.entries());
-    console.log("Form data:", data);
 
     try {
       const response = await fetch("/api/auth/login", {
@@ -29,7 +27,6 @@ export default function Login() {
       });
 
       const responseData = await response.json();
-      console.log("Response data:", responseData);
 
       if (response.ok) {
         const { user } = responseData;

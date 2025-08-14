@@ -12,22 +12,32 @@ export default function Login() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    console.log("Form submitted"); // Debugging line
     const formData = new FormData(event.currentTarget);
     const data = Object.fromEntries(formData.entries());
+    console.log("Form data:", data); // Debugging line
 
-    const response = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-    if (response.ok) {
-      const { user } = await response.json();
-      login(user);
-      router.push("/");
-    } else {
-      const { error } = await response.json();
-      setError(error);
+      console.log("Response status:", response.status); // Debugging line
+      const responseData = await response.json();
+      console.log("Response data:", responseData); // Debugging line
+
+      if (response.ok) {
+        const { user } = responseData;
+        login(user);
+        router.push("/");
+      } else {
+        setError(responseData.error || "An unknown error occurred");
+      }
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setError("Failed to connect to the server.");
     }
   }
 

@@ -14,7 +14,7 @@ export default function AddItemForm() {
       return [];
     }
     return groups.filter(group =>
-      Array.isArray(group.storage_area_ids) && group.storage_area_ids.includes(selectedStorageArea)
+      Array.isArray(group.storage_area_ids) && group.storage_area_ids.map(String).includes(selectedStorageArea)
     );
   }, [selectedStorageArea, groups]);
 

@@ -8,14 +8,18 @@ import { useStore } from "./StoreProvider";
 export default function Login() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useStore();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    console.log("Form submitted"); // Debugging line
+    setIsSubmitting(true);
+    setError(null);
+    console.log("Form submitted");
+
     const formData = new FormData(event.currentTarget);
     const data = Object.fromEntries(formData.entries());
-    console.log("Form data:", data); // Debugging line
+    console.log("Form data:", data);
 
     try {
       const response = await fetch("/api/auth/login", {
@@ -24,9 +28,8 @@ export default function Login() {
         body: JSON.stringify(data),
       });
 
-      console.log("Response status:", response.status); // Debugging line
       const responseData = await response.json();
-      console.log("Response data:", responseData); // Debugging line
+      console.log("Response data:", responseData);
 
       if (response.ok) {
         const { user } = responseData;
@@ -38,6 +41,8 @@ export default function Login() {
     } catch (err) {
       console.error("Fetch error:", err);
       setError("Failed to connect to the server.");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -79,12 +84,14 @@ export default function Login() {
             />
           </div>
           {error && <p className="text-red-500">{error}</p>}
+          {isSubmitting && <p className="text-blue-500">Processing...</p>}
           <div>
             <button
               type="submit"
-              className="w-full px-4 py-2 font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+              disabled={isSubmitting}
+              className="w-full px-4 py-2 font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:bg-gray-400"
             >
-              Sign in
+              {isSubmitting ? "Signing In..." : "Sign In"}
             </button>
           </div>
         </form>

@@ -5,11 +5,7 @@ import { useStore } from "./StoreProvider";
 import EditStorageAreaModal from "./EditStorageAreaModal";
 import styles from "./ManageStorageAreas.module.css";
 
-interface ManageStorageAreasProps {
-  showEdit: boolean;
-}
-
-export default function ManageStorageAreas({ showEdit }: ManageStorageAreasProps) {
+export default function ManageStorageAreas() {
   const { storageAreas, refreshData } = useStore();
   const [newStorageArea, setNewStorageArea] = useState("");
   const [editingStorageArea, setEditingStorageArea] = useState(null);

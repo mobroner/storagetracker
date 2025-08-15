@@ -5,11 +5,7 @@ import { useStore } from "./StoreProvider";
 import EditGroupModal from "./EditGroupModal";
 import styles from "./ManageGroups.module.css";
 
-interface ManageGroupsProps {
-  showEdit: boolean;
-}
-
-export default function ManageGroups({ showEdit }: ManageGroupsProps) {
+export default function ManageGroups() {
   const { storageAreas, groups, refreshData } = useStore();
   const [newGroupName, setNewGroupName] = useState("");
   const [selectedStorageAreas, setSelectedStorageAreas] = useState<string[]>([]);

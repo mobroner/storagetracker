@@ -1,13 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import { useStore } from "./StoreProvider";
 import styles from "./Login.module.css";
 
 export default function Login() {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useStore();

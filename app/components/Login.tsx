@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import { useStore } from "./StoreProvider";
+import styles from "./Login.module.css";
 
 export default function Login() {
   const router = useRouter();
@@ -46,15 +47,12 @@ export default function Login() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center">Sign in to your account</h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
+    <div className={styles.container}>
+      <div className={styles.card}>
+        <h2 className={styles.title}>Sign in to your account</h2>
+        <form onSubmit={handleSubmit} className={styles.form}>
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="email" className={styles.label}>
               Email address
             </label>
             <input
@@ -63,14 +61,11 @@ export default function Login() {
               type="email"
               autoComplete="email"
               required
-              className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"
+              className={styles.input}
             />
           </div>
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="password" className={styles.label}>
               Password
             </label>
             <input
@@ -79,24 +74,24 @@ export default function Login() {
               type="password"
               autoComplete="current-password"
               required
-              className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"
+              className={styles.input}
             />
           </div>
-          {error && <p className="text-red-500">{error}</p>}
-          {isSubmitting && <p className="text-blue-500">Processing...</p>}
+          {error && <p className="text-theme-danger">{error}</p>}
+          {isSubmitting && <p className="text-theme-primary">Processing...</p>}
           <div>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full px-4 py-2 font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:bg-gray-400"
+              className={styles.button}
             >
               {isSubmitting ? "Signing In..." : "Sign In"}
             </button>
           </div>
         </form>
-        <p className="mt-4 text-center text-sm text-gray-600">
+        <p className={styles.link}>
           Don't have an account?{' '}
-          <Link href="/register" className="font-medium text-yellow-600 hover:text-yellow-500">
+          <Link href="/register">
             Sign up
           </Link>
         </p>

@@ -5,14 +5,15 @@ import InventoryList from "./components/InventoryList";
 import ManageGroups from "./components/ManageGroups";
 import ManageStorageAreas from "./components/ManageStorageAreas";
 import { useStore } from "./components/StoreProvider";
+import styles from "./page.module.css";
 
 export default function Home() {
   const { itemsByStorageArea } = useStore();
 
   return (
-    <main className="container mx-auto p-8">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="md:col-span-2">
+    <main className={styles.container}>
+      <div className={styles.grid}>
+        <div>
           <AddItemForm />
           <InventoryList itemsByStorageArea={itemsByStorageArea} />
         </div>

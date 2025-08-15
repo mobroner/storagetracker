@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
   for (const storageAreaId of data.storageAreaIds) {
     await db.query(
       `INSERT INTO storage_area_groups (storage_area_id, group_id) VALUES ($1, $2)`,
-      [storageAreaId, groupId]
+      [Number(storageAreaId), groupId]
     );
   }
   return new Response(null, { status: 204 });
@@ -66,7 +66,7 @@ export async function PUT(request: NextRequest) {
   for (const storageAreaId of storageAreaIds) {
     await db.query(
       `INSERT INTO storage_area_groups (storage_area_id, group_id) VALUES ($1, $2)`,
-      [storageAreaId, id]
+      [Number(storageAreaId), id]
     );
   }
 

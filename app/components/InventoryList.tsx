@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useStore } from "./StoreProvider";
 import SelectGroupModal from "./SelectGroupModal";
 import { Item, ItemsByStorageArea } from "@/app/lib/definitions";
+import styles from "./InventoryList.module.css";
 
 interface InventoryListProps {
   itemsByStorageArea: ItemsByStorageArea;
@@ -64,7 +65,7 @@ export default function InventoryList({ itemsByStorageArea }: InventoryListProps
   }
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-md">
+    <div className={styles.card}>
       {showModal && (
         <SelectGroupModal
           groups={groups}
@@ -80,20 +81,12 @@ export default function InventoryList({ itemsByStorageArea }: InventoryListProps
         }
 
         return (
-          <div key={storageArea} className="mb-8 border-2 border-gray-300 rounded-lg p-4">
+          <div key={storageArea} className={styles.storageArea}>
             <h3
-              className="text-xl font-bold mb-4 cursor-pointer text-gray-700 flex items-center"
+              className={`${styles.storageAreaHeader} ${openSections[storageArea] ? styles.open : ''}`}
               onClick={() => toggleSection(storageArea)}
             >
-              <svg
-                className={`w-6 h-6 mr-2 transform transition-transform ${
-                  openSections[storageArea] ? 'rotate-90' : ''
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
               </svg>
               {storageArea}
@@ -104,51 +97,51 @@ export default function InventoryList({ itemsByStorageArea }: InventoryListProps
                   return null;
                 }
                 return (
-                  <div key={groupName} className="mb-8">
-                    <h4 className="text-lg font-bold mb-4 text-gray-600">{groupName === 'null' ? 'Uncategorized' : groupName}</h4>
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full bg-white rounded-lg">
-                        <thead className="bg-yellow-50">
+                  <div key={groupName} className={styles.group}>
+                    <h4 className={styles.groupTitle}>{groupName === 'null' ? 'Uncategorized' : groupName}</h4>
+                    <div className={styles.tableContainer}>
+                      <table className={styles.table}>
+                        <thead>
                           <tr>
-                            <th className="py-2 px-4 border-b text-left">Item</th>
-                            <th className="py-2 px-4 border-b text-center">Quantity</th>
-                            <th className="py-2 px-4 border-b text-center">Added Date</th>
-                            <th className="py-2 px-4 border-b text-center">Expires</th>
-                            <th className="py-2 px-4 border-b text-center">Actions</th>
+                            <th style={{ width: '30%' }}>Item</th>
+                            <th style={{ width: '15%' }} className="text-center">Quantity</th>
+                            <th style={{ width: '25%' }} className="text-center">Added Date</th>
+                            <th style={{ width: '15%' }} className="text-center">Expires</th>
+                            <th style={{ width: '15%' }} className="text-center">Actions</th>
                           </tr>
                         </thead>
                         <tbody>
                           {items.map((item: Item) => (
                             <tr key={item.id}>
-                              <td className="py-2 px-4 border-b">{item.item_name}</td>
-                              <td className="py-2 px-4 border-b">
-                                <div className="flex items-center justify-center">
+                              <td>{item.item_name}</td>
+                              <td>
+                                <div className={styles.quantityContainer}>
                                   <button
                                     onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                    className="px-2 py-1 bg-gray-200 rounded-l-md"
+                                    className={styles.quantityButton}
                                   >
                                     -
                                   </button>
-                                  <span className="px-4">{item.quantity}</span>
+                                  <span className={styles.quantity}>{item.quantity}</span>
                                   <button
                                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                    className="px-2 py-1 bg-gray-200 rounded-r-md"
+                                    className={styles.quantityButton}
                                   >
                                     +
                                   </button>
                                 </div>
                               </td>
-                              <td className="py-2 px-4 border-b text-center">{new Date(item.date_added).toLocaleDateString()}</td>
-                              <td className="py-2 px-4 border-b text-center">{item.expiry_date ? new Date(item.expiry_date).toLocaleDateString() : "N/A"}</td>
-                              <td className="py-2 px-4 border-b text-center">
-                                <button className="text-gray-500 hover:text-gray-700 mr-2">
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fillRule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clipRule="evenodd" /></svg>
+                              <td className="text-center">{new Date(item.date_added).toLocaleDateString()}</td>
+                              <td className="text-center">{item.expiry_date ? new Date(item.expiry_date).toLocaleDateString() : "N/A"}</td>
+                              <td className={styles.actionsContainer}>
+                                <button className={styles.actionButton}>
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fillRule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clipRule="evenodd" /></svg>
                                 </button>
                                 <button
                                   onClick={() => deleteItem(item.id)}
-                                  className="text-gray-500 hover:text-gray-700"
+                                  className={`${styles.actionButton} ${styles.deleteButton}`}
                                 >
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clipRule="evenodd" /></svg>
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clipRule="evenodd" /></svg>
                                 </button>
                               </td>
                             </tr>

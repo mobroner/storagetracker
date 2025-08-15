@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useMemo } from "react";
 import { useStore } from "./StoreProvider";
+import styles from "./AddItemForm.module.css";
 
 export default function AddItemForm() {
   const router = useRouter();
@@ -42,25 +43,25 @@ export default function AddItemForm() {
   }
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-md mb-8">
-      <h2 className="text-2xl font-bold mb-4 text-gray-800">Add New Item</h2>
-      <p className="mb-4 text-gray-600">Add a new food item to your freezer inventory.</p>
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className={styles.card}>
+      <h2 className={styles.title}>Add New Item</h2>
+      <p className={styles.description}>Add a new food item to your freezer inventory.</p>
+      <form onSubmit={handleSubmit} className={styles.form}>
         <div>
-          <label htmlFor="item-name" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="item-name" className={styles.label}>
             Item Name
           </label>
           <input
             type="text"
             name="item-name"
             id="item-name"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 sm:text-sm"
+            className={styles.input}
             placeholder="e.g., Frozen Corn"
             required
           />
         </div>
         <div>
-          <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="quantity" className={styles.label}>
             Quantity
           </label>
           <input
@@ -68,53 +69,53 @@ export default function AddItemForm() {
             name="quantity"
             id="quantity"
             defaultValue="1"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 sm:text-sm"
+            className={styles.input}
             required
           />
         </div>
         <div>
-          <label htmlFor="date-put-in-storage" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="date-put-in-storage" className={styles.label}>
             Date Put in Storage
           </label>
           <input
             type="date"
             name="date-put-in-storage"
             id="date-put-in-storage"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 sm:text-sm"
+            className={styles.input}
             required
           />
         </div>
         <div>
-          <label htmlFor="expiration-date" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="expiration-date" className={styles.label}>
             Expiration Date (Optional)
           </label>
           <input
             type="date"
             name="expiration-date"
             id="expiration-date"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 sm:text-sm"
+            className={styles.input}
           />
         </div>
         <div>
-          <label htmlFor="barcode" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="barcode" className={styles.label}>
             Barcode (Optional)
           </label>
           <input
             type="text"
             name="barcode"
             id="barcode"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 sm:text-sm"
+            className={styles.input}
             placeholder="e.g., 01234567890"
           />
         </div>
         <div>
-          <label htmlFor="storage-area" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="storage-area" className={styles.label}>
             Storage Area
           </label>
           <select
             id="storage-area"
             name="storage-area"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 sm:text-sm"
+            className={styles.select}
             required
             value={selectedStorageArea}
             onChange={(e) => setSelectedStorageArea(e.target.value)}
@@ -128,13 +129,13 @@ export default function AddItemForm() {
           </select>
         </div>
         <div>
-          <label htmlFor="group" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="group" className={styles.label}>
             Group (Optional)
           </label>
           <select
             id="group"
             name="group"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 sm:text-sm"
+            className={styles.select}
             disabled={!selectedStorageArea}
           >
             <option value="">Select a group</option>
@@ -145,10 +146,10 @@ export default function AddItemForm() {
             ))}
           </select>
         </div>
-        <div className="md:col-span-2 flex justify-end">
+        <div className={styles.buttonContainer}>
           <button
             type="submit"
-            className="inline-flex justify-center rounded-md border border-transparent bg-gray-800 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+            className={styles.button}
           >
             Add Item
           </button>

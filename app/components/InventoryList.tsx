@@ -15,7 +15,7 @@ interface InventoryListProps {
   setEditingItem: (item: Item) => void;
   filteredGroups: Group[];
   setSelectedStorageArea: (id: string) => void;
-  addItemFormRef: RefObject<HTMLDivElement>;
+  addItemFormRef: RefObject<HTMLDivElement | null>;
 }
 
 export default function InventoryList({

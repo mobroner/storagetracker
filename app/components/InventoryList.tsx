@@ -163,6 +163,7 @@ export default function InventoryList({
                                 <button
                                   onClick={() => {
                                     setEditingItem(item);
+                                    setSelectedStorageArea(item.storage_area_id);
                                     addItemFormRef.current?.scrollIntoView({ behavior: "smooth" });
                                   }}
                                   className={styles.actionButton}

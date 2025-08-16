@@ -39,7 +39,6 @@ export default function SelectGroupModal({
           </button>
         </div>
         <div className={styles.content}>
-          <pre>{JSON.stringify(groups, null, 2)}</pre>
           <select
             value={selectedGroupId}
             onChange={(e) => setSelectedGroupId(e.target.value)}

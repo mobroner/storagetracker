@@ -40,7 +40,9 @@ export default function InventoryList({
   };
 
   async function updateQuantity(id: string, newQuantity: number) {
-    const allItems: Item[] = Object.values(itemsByStorageArea).flatMap((groups) => Object.values(groups).flat());
+    const allItems: Item[] = Object.values(itemsByStorageArea)
+      .flatMap((storageArea) => Object.values(storageArea).flat())
+      .flat();
     const item = allItems.find((item: Item) => item.id === id);
 
     if (item && item.quantity === 0 && newQuantity > 0) {

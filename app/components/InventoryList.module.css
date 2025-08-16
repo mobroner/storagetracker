@@ -129,17 +129,59 @@
 }
 
 @media (max-width: 768px) {
-  .table {
-    table-layout: auto;
+  .table thead {
+    display: none;
   }
 
-  .actionsContainer {
-    flex-direction: column;
+  .table,
+  .table tbody,
+  .table tr,
+  .table td {
+    display: block;
+    width: 100%;
+  }
+
+  .table tr {
+    margin-bottom: 1rem;
+    border: 2px solid rgb(var(--card-border));
+    border-radius: 0.5rem;
+    padding: 1rem;
+  }
+
+  .table td {
+    border: none;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
   }
 
-  .actionButton:not(:last-child) {
-    margin-right: 0;
+  .itemData {
+    font-weight: 700;
+    font-size: 1.125rem;
     margin-bottom: 0.5rem;
+  }
+
+  .quantityData {
+    margin-bottom: 0.5rem;
+  }
+
+  .addedDateData::before {
+    content: "Added: ";
+    font-weight: 700;
+  }
+
+  .expiresData::before {
+    content: "Expires: ";
+    font-weight: 700;
+  }
+
+  .actionsData {
+    margin-top: 0.5rem;
+  }
+
+  .actionsContainer {
+    width: 100%;
+    justify-content: flex-end;
   }
 }

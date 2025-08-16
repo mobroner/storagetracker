@@ -23,7 +23,7 @@ export default function Home() {
 
   const filteredGroups = useMemo(() => {
     if (!selectedStorageArea) {
-      return [];
+      return groups.filter((group) => group.group_name !== "Not in Storage");
     }
     return groups.filter(
       (group) =>

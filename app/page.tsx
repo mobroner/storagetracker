@@ -18,8 +18,8 @@ export default function Home() {
           <InventoryList itemsByStorageArea={itemsByStorageArea} />
         </div>
         <div>
-          <ManageStorageAreas showEdit={false} />
-          <ManageGroups showEdit={false} />
+          <ManageStorageAreas />
+          <ManageGroups />
         </div>
       </div>
     </main>

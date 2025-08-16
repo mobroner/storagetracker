@@ -28,7 +28,7 @@ export default function EditGroupModal({
 }: EditGroupModalProps) {
   const [groupName, setGroupName] = useState(group.group_name);
   const [selectedStorageAreaIds, setSelectedStorageAreaIds] = useState(
-    group.storage_area_ids || []
+    group.storage_area_ids.filter((id) => id !== null) || []
   );
 
   function handleSave() {

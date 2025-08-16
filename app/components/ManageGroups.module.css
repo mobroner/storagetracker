@@ -66,6 +66,31 @@
 .listItem {
   display: flex;
   justify-content: space-between;
-  padding: 0.5rem 0;
+  align-items: center;
+  padding: 0.75rem 0;
   border-bottom: 1px solid rgb(var(--card-border));
+}
+
+.groupInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.storageAreas {
+  font-size: 0.875rem;
+  color: rgb(var(--secondary));
+}
+
+.editButton {
+  color: rgb(var(--secondary));
+  transition: color 0.3s;
+}
+
+.editButton:hover {
+  color: rgb(var(--primary));
+}
+
+.editButton svg {
+  width: 1rem;
+  height: 1rem;
 }

@@ -72,6 +72,7 @@ export async function GET() {
     return acc;
   }, {} as ItemsByStorageArea);
 
+  console.log('API /api/items GET itemsByStorageArea:', JSON.stringify(itemsByStorageArea, null, 2));
   return NextResponse.json(itemsByStorageArea);
 }
 

@@ -77,12 +77,13 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
         dateAdded: "",
         expiryDate: "",
         barcode: "",
-        storageAreaId: "",
-        groupId: "",
-      });
-      router.refresh();
-      refreshData();
-    }
+      storageAreaId: "",
+      groupId: "",
+    });
+    setSelectedStorageArea("");
+    router.refresh();
+    refreshData();
+  }
 
     function handleChange(
       event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>

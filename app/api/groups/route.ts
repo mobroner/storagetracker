@@ -27,7 +27,7 @@ export async function GET() {
       ig.group_name`,
     [userId]
   );
-  console.log('API /api/groups GET result.rows:', result.rows);
+  console.log('API /api/groups GET result.rows:', JSON.stringify(result.rows, null, 2));
   return NextResponse.json(result.rows);
 }
 

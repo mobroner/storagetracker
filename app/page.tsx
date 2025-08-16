@@ -29,13 +29,14 @@ export default function Home() {
   return (
     <main className={styles.container}>
       <div className={styles.grid}>
-        <div ref={addItemFormRef}>
+        <div>
           <AddItemForm
             editingItem={editingItem}
             setEditingItem={setEditingItem}
             filteredGroups={filteredGroups}
             selectedStorageArea={selectedStorageArea}
             setSelectedStorageArea={setSelectedStorageArea}
+            ref={addItemFormRef}
           />
           <InventoryList
             itemsByStorageArea={itemsByStorageArea}

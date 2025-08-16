@@ -7,13 +7,14 @@ import ManageGroups from "./components/ManageGroups";
 import ManageStorageAreas from "./components/ManageStorageAreas";
 import { useStore } from "./components/StoreProvider";
 import styles from "./page.module.css";
-import { Item } from "./lib/definitions";
+import { Item, Group } from "./lib/definitions";
 
 // An extra comment to force a re-save
 export default function Home() {
   const { itemsByStorageArea, groups } = useStore();
   const [editingItem, setEditingItem] = useState<Item | null>(null);
   const [selectedStorageArea, setSelectedStorageArea] = useState<string>('');
+  const [modalGroups, setModalGroups] = useState<Group[]>([]);
   const addItemFormRef = useRef<HTMLDivElement>(null);
 
   const notInStorageGroup = useMemo(
@@ -48,11 +49,8 @@ export default function Home() {
           <InventoryList
             itemsByStorageArea={itemsByStorageArea}
             setEditingItem={setEditingItem}
-            filteredGroups={
-              notInStorageGroup
-                ? [...filteredGroups, notInStorageGroup]
-                : filteredGroups
-            }
+            modalGroups={modalGroups}
+            setModalGroups={setModalGroups}
             setSelectedStorageArea={setSelectedStorageArea}
             addItemFormRef={addItemFormRef}
           />

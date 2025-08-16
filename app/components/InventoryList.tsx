@@ -14,7 +14,8 @@ import { RefObject } from "react";
 interface InventoryListProps {
   itemsByStorageArea: ItemsByStorageArea;
   setEditingItem: (item: Item) => void;
-  filteredGroups: Group[];
+  modalGroups: Group[];
+  setModalGroups: (groups: Group[]) => void;
   setSelectedStorageArea: (id: string) => void;
   addItemFormRef: RefObject<HTMLDivElement | null>;
 }
@@ -22,11 +23,12 @@ interface InventoryListProps {
 export default function InventoryList({
   itemsByStorageArea,
   setEditingItem,
-  filteredGroups,
+  modalGroups,
+  setModalGroups,
   setSelectedStorageArea,
   addItemFormRef,
 }: InventoryListProps) {
-  const { refreshData } = useStore();
+  const { groups, refreshData } = useStore();
   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>(
     Object.keys(itemsByStorageArea).reduce((acc, key) => {
       acc[key] = true;
@@ -49,6 +51,12 @@ export default function InventoryList({
     if (item && item.quantity === 0 && newQuantity > 0) {
       setSelectedItemId(id);
       setSelectedStorageArea(item.storage_area_id);
+      const filtered = groups.filter(
+        (group) =>
+          group.storage_area_ids &&
+          group.storage_area_ids.includes(item.storage_area_id)
+      );
+      setModalGroups(filtered);
       setShowModal(true);
     } else if (newQuantity >= 0) {
       await fetch("/api/items", {
@@ -86,7 +94,7 @@ export default function InventoryList({
     <div className={styles.card}>
       {showModal && (
         <SelectGroupModal
-          groups={filteredGroups}
+          groups={modalGroups}
           onClose={() => setShowModal(false)}
           onSelect={handleSelectGroup}
         />

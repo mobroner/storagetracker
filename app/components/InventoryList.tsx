@@ -104,10 +104,10 @@ export default function InventoryList({ itemsByStorageArea }: InventoryListProps
                         <thead>
                           <tr>
                             <th>Item</th>
-                            <th className="text-center">Quantity</th>
-                            <th className="text-center">Added Date</th>
-                            <th className="text-center">Expires</th>
-                            <th className="text-center">Actions</th>
+                            <th>Quantity</th>
+                            <th>Added Date</th>
+                            <th>Expires</th>
+                            <th>Actions</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -131,8 +131,8 @@ export default function InventoryList({ itemsByStorageArea }: InventoryListProps
                                   </button>
                                 </div>
                               </td>
-                              <td className={`${styles.addedDateData} text-center`}>{new Date(item.date_added).toLocaleDateString()}</td>
-                              <td className={`${styles.expiresData} text-center`}>{item.expiry_date ? new Date(item.expiry_date).toLocaleDateString() : "N/A"}</td>
+                              <td className={styles.addedDateData}>{new Date(item.date_added).toLocaleDateString()}</td>
+                              <td className={styles.expiresData}>{item.expiry_date ? new Date(item.expiry_date).toLocaleDateString() : "N/A"}</td>
                               <td className={`${styles.actionsData} ${styles.actionsContainer}`}>
                                 <button className={styles.actionButton}>
                                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fillRule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clipRule="evenodd" /></svg>

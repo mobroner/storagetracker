@@ -26,7 +26,11 @@ export default function Header() {
     <header className={styles.header}>
       <div className={styles.logo}>
         <Link href="/">
-          Storage Tracker
+          <img
+            src="/logo.png"
+            alt="Storage Tracker Logo"
+            className={styles.logoImage}
+          />
         </Link>
       </div>
       {user && (

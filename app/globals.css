@@ -1,27 +1,25 @@
 :root {
-  --background: 255 255 255;
-  --foreground: 17 24 39;
-  --card-background: 243 244 246;
+  --background: 245 241 229;
+  --foreground: 30 55 84;
+  --card-background: 255 255 255;
   --card-border: 229 231 235;
-  --header-background: 219 234 254;
-  --header-foreground: 30 64 175;
-  --primary: 59 130 246;
-  --secondary: 107 114 128;
-  --accent: 245 158 11;
+  --header-background: 30 55 84;
+  --header-foreground: 245 241 229;
+  --primary: 71 107 141;
+  --secondary: 228 107 78;
   --danger: 239 68 68;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: 17 24 39;
-    --foreground: 255 255 255;
-    --card-background: 31 41 55;
-    --card-border: 55 65 81;
-    --header-background: 30 58 138;
-    --header-foreground: 209 213 219;
-    --primary: 96 165 250;
-    --secondary: 156 163 175;
-    --accent: 251 191 36;
+    --background: 30 55 84;
+    --foreground: 245 241 229;
+    --card-background: 71 107 141;
+    --card-border: 107 114 128;
+    --header-background: 245 241 229;
+    --header-foreground: 30 55 84;
+    --primary: 228 107 78;
+    --secondary: 245 241 229;
     --danger: 248 113 113;
   }
 }
@@ -30,4 +28,5 @@ body {
   color: rgb(var(--foreground));
   background-color: rgb(var(--background));
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  margin: 0;
 }

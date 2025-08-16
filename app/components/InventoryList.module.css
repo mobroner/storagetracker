@@ -48,31 +48,43 @@
 
 .table {
   min-width: 100%;
-  background-color: rgb(var(--card-background));
   table-layout: fixed;
   width: 100%;
-  border-collapse: collapse;
-  border: 1px solid rgb(var(--card-border));
+  border-collapse: separate;
+  border-spacing: 0 0.5rem;
 }
 
 .table th {
   padding: 0.25rem 0.5rem;
-  border: 1px solid rgb(var(--card-border));
   text-align: left;
   font-size: 0.875rem;
+  border-bottom: 2px solid rgb(var(--card-border));
 }
 
 .table td {
-  padding: 0.25rem 0.5rem;
-  border: 1px solid rgb(var(--card-border));
-  font-size: 0.875rem;
+  padding: 0.5rem;
+  background-color: rgb(var(--card-background));
   word-break: break-word;
+  border-top: 1px solid rgb(var(--card-border));
+  border-bottom: 1px solid rgb(var(--card-border));
+}
+
+.table td:first-child {
+  border-left: 1px solid rgb(var(--card-border));
+  border-top-left-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
+}
+
+.table td:last-child {
+  border-right: 1px solid rgb(var(--card-border));
+  border-top-right-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
 }
 
 .quantityContainer {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .quantityButton {
@@ -103,7 +115,7 @@
 .actionsContainer {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .actionButton {
@@ -166,14 +178,21 @@
     margin-bottom: 0.5rem;
   }
 
+  .addedDateData,
+  .expiresData {
+    justify-content: flex-start;
+  }
+
   .addedDateData::before {
     content: "Added: ";
     font-weight: 700;
+    margin-right: 0.5rem;
   }
 
   .expiresData::before {
     content: "Expires: ";
     font-weight: 700;
+    margin-right: 0.5rem;
   }
 
   .actionsData {

@@ -15,12 +15,18 @@ export default function Home() {
   const [selectedStorageArea, setSelectedStorageArea] = useState<string>('');
   const addItemFormRef = useRef<HTMLDivElement>(null);
 
+  const notInStorageGroup = useMemo(
+    () => groups.find((group) => group.group_name === "Not in Storage"),
+    [groups]
+  );
+
   const filteredGroups = useMemo(() => {
     if (!selectedStorageArea) {
       return [];
     }
     return groups.filter(
       (group) =>
+        group.group_name !== "Not in Storage" &&
         Array.isArray(group.storage_area_ids) &&
         group.storage_area_ids.map(String).includes(selectedStorageArea)
     );
@@ -41,7 +47,11 @@ export default function Home() {
           <InventoryList
             itemsByStorageArea={itemsByStorageArea}
             setEditingItem={setEditingItem}
-            filteredGroups={filteredGroups}
+            filteredGroups={
+              notInStorageGroup
+                ? [...filteredGroups, notInStorageGroup]
+                : filteredGroups
+            }
             setSelectedStorageArea={setSelectedStorageArea}
             addItemFormRef={addItemFormRef}
           />

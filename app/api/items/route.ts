@@ -40,12 +40,22 @@ export async function GET() {
       i.item_name,
       i.quantity,
       i.date_added,
-      i.expiry_date
+      i.expiry_date,
+      i.storage_area_id,
+      i.group_id,
+      i.barcode
     FROM items i
     JOIN storage_areas sa ON i.storage_area_id = sa.id
     LEFT JOIN item_groups ig ON i.group_id = ig.id
     WHERE i.user_id = $1
-    ORDER BY sa.name, ig.group_name, i.item_name`,
+    ORDER BY
+      sa.name,
+      CASE
+        WHEN ig.group_name = 'Not in Storage' THEN 1
+        ELSE 0
+      END,
+      ig.group_name,
+      i.item_name`,
     [userId]
   );
 
@@ -96,48 +106,78 @@ export async function PUT(request: Request) {
   }
 
   const data = await request.json();
-  const { itemId, quantity, groupId } = data;
+  const {
+    id,
+    itemName,
+    quantity,
+    dateAdded,
+    expiryDate,
+    barcode,
+    storageAreaId,
+    groupId,
+  } = data;
 
-  const currentItem = await db.query(`SELECT group_id, original_group_id FROM items WHERE id = $1`, [itemId]);
-  const { group_id: currentGroupId, original_group_id: originalGroupId } = currentItem.rows[0];
-
-  if (quantity === 0) {
-    const notInStorageGroup = await db.query(
-      `SELECT id FROM item_groups WHERE group_name = 'Not in Storage' AND user_id = $1`,
-      [userId]
-    );
-
-    let notInStorageGroupId;
-    if (notInStorageGroup.rows.length === 0) {
-      const newGroup = await db.query(
-        `INSERT INTO item_groups (group_name, user_id) VALUES ('Not in Storage', $1) RETURNING id`,
-        [userId]
-      );
-      notInStorageGroupId = newGroup.rows[0].id;
-    } else {
-      notInStorageGroupId = notInStorageGroup.rows[0].id;
-    }
-
+  if (itemName) {
+    // Full item update
     await db.query(
-      `UPDATE items SET quantity = 0, group_id = $1, original_group_id = $2 WHERE id = $3`,
-      [notInStorageGroupId, currentGroupId, itemId]
+      `UPDATE items
+       SET item_name = $1, quantity = $2, date_added = $3, expiry_date = $4, barcode = $5, storage_area_id = $6, group_id = $7
+       WHERE id = $8 AND user_id = $9`,
+      [
+        itemName,
+        quantity,
+        dateAdded,
+        expiryDate || null,
+        barcode || null,
+        storageAreaId,
+        groupId || null,
+        id,
+        userId,
+      ]
     );
   } else {
-    if (groupId) {
-      await db.query(
-        `UPDATE items SET quantity = $1, group_id = $2, original_group_id = NULL WHERE id = $3`,
-        [quantity, groupId, itemId]
+    // Quantity-only update
+    const currentItem = await db.query(`SELECT group_id, original_group_id FROM items WHERE id = $1`, [id]);
+    const { group_id: currentGroupId, original_group_id: originalGroupId } = currentItem.rows[0];
+
+    if (quantity === 0) {
+      const notInStorageGroup = await db.query(
+        `SELECT id FROM item_groups WHERE group_name = 'Not in Storage' AND user_id = $1`,
+        [userId]
       );
-    } else if (originalGroupId) {
+
+      let notInStorageGroupId;
+      if (notInStorageGroup.rows.length === 0) {
+        const newGroup = await db.query(
+          `INSERT INTO item_groups (group_name, user_id) VALUES ('Not in Storage', $1) RETURNING id`,
+          [userId]
+        );
+        notInStorageGroupId = newGroup.rows[0].id;
+      } else {
+        notInStorageGroupId = notInStorageGroup.rows[0].id;
+      }
+
       await db.query(
-        `UPDATE items SET quantity = $1, group_id = $2, original_group_id = NULL WHERE id = $3`,
-        [quantity, originalGroupId, itemId]
+        `UPDATE items SET quantity = 0, group_id = $1, original_group_id = $2 WHERE id = $3`,
+        [notInStorageGroupId, currentGroupId, id]
       );
     } else {
-      await db.query(`UPDATE items SET quantity = $1 WHERE id = $2`, [
-        quantity,
-        itemId,
-      ]);
+      if (groupId) {
+        await db.query(
+          `UPDATE items SET quantity = $1, group_id = $2, original_group_id = NULL WHERE id = $3`,
+          [quantity, groupId, id]
+        );
+      } else if (originalGroupId) {
+        await db.query(
+          `UPDATE items SET quantity = $1, group_id = $2, original_group_id = NULL WHERE id = $3`,
+          [quantity, originalGroupId, id]
+        );
+      } else {
+        await db.query(`UPDATE items SET quantity = $1 WHERE id = $2`, [
+          quantity,
+          id,
+        ]);
+      }
     }
   }
 
@@ -146,6 +186,6 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   const data = await request.json();
-  await db.query(`DELETE FROM items WHERE id = $1`, [data.itemId]);
+  await db.query(`DELETE FROM items WHERE id = $1`, [data.id]);
   return new Response(null, { status: 204 });
 }

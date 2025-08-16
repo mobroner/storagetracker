@@ -1,63 +1,113 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useStore } from "./StoreProvider";
 import styles from "./AddItemForm.module.css";
+import { Item, Group } from "@/app/lib/definitions";
 
-export default function AddItemForm() {
+interface AddItemFormProps {
+  editingItem: Item | null;
+  setEditingItem: (item: Item | null) => void;
+  filteredGroups: Group[];
+  selectedStorageArea: string;
+  setSelectedStorageArea: (id: string) => void;
+}
+
+export default function AddItemForm({
+  editingItem,
+  setEditingItem,
+  filteredGroups,
+  selectedStorageArea,
+  setSelectedStorageArea,
+}: AddItemFormProps) {
   const router = useRouter();
-  const { storageAreas, groups, refreshData } = useStore();
-  const [selectedStorageArea, setSelectedStorageArea] = useState<string>('');
+  const { storageAreas, refreshData } = useStore();
+  const [formData, setFormData] = useState({
+    itemName: "",
+    quantity: "1",
+    dateAdded: "",
+    expiryDate: "",
+    barcode: "",
+    storageAreaId: "",
+    groupId: "",
+  });
 
-  const filteredGroups = useMemo(() => {
-    if (!selectedStorageArea) {
-      return [];
+  useEffect(() => {
+    if (editingItem) {
+      setFormData({
+        itemName: editingItem.item_name,
+        quantity: String(editingItem.quantity),
+        dateAdded: new Date(editingItem.date_added).toISOString().split("T")[0],
+        expiryDate: editingItem.expiry_date
+          ? new Date(editingItem.expiry_date).toISOString().split("T")[0]
+          : "",
+        barcode: editingItem.barcode || "",
+        storageAreaId: editingItem.storage_area_id,
+        groupId: editingItem.group_id || "",
+      });
+      setSelectedStorageArea(editingItem.storage_area_id);
     }
-    return groups.filter(group =>
-      Array.isArray(group.storage_area_ids) && group.storage_area_ids.map(String).includes(selectedStorageArea)
-    );
-  }, [selectedStorageArea, groups]);
+  }, [editingItem]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const data = Object.fromEntries(formData.entries());
+    const method = editingItem ? "PUT" : "POST";
+    const body = editingItem
+      ? JSON.stringify({ ...formData, id: editingItem.id })
+      : JSON.stringify(formData);
 
     await fetch("/api/items", {
-      method: "POST",
+      method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        itemName: data["item-name"],
-        quantity: data.quantity,
-        dateAdded: data["date-put-in-storage"],
-        expiryDate: data["expiration-date"],
-        barcode: data.barcode,
-        storageAreaId: data["storage-area"],
-        groupId: data.group,
-      }),
+      body,
     });
 
+    setEditingItem(null);
+    setFormData({
+      itemName: "",
+      quantity: "1",
+      dateAdded: "",
+      expiryDate: "",
+      barcode: "",
+      storageAreaId: "",
+      groupId: "",
+    });
     router.refresh();
     refreshData();
   }
 
+  function handleChange(
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) {
+    const { name, value } = event.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  }
+
   return (
     <div className={styles.card}>
-      <h2 className={styles.title}>Add New Item</h2>
-      <p className={styles.description}>Add a new food item to your freezer inventory.</p>
+      <h2 className={styles.title}>
+        {editingItem ? "Edit Item" : "Add New Item"}
+      </h2>
+      <p className={styles.description}>
+        {editingItem
+          ? "Update the details of your item."
+          : "Add a new food item to your freezer inventory."}
+      </p>
       <form onSubmit={handleSubmit} className={styles.form}>
         <div>
-          <label htmlFor="item-name" className={styles.label}>
+          <label htmlFor="itemName" className={styles.label}>
             Item Name
           </label>
           <input
             type="text"
-            name="item-name"
-            id="item-name"
+            name="itemName"
+            id="itemName"
             className={styles.input}
             placeholder="e.g., Frozen Corn"
             required
+            value={formData.itemName}
+            onChange={handleChange}
           />
         </div>
         <div>
@@ -68,32 +118,37 @@ export default function AddItemForm() {
             type="number"
             name="quantity"
             id="quantity"
-            defaultValue="1"
             className={styles.input}
             required
+            value={formData.quantity}
+            onChange={handleChange}
           />
         </div>
         <div>
-          <label htmlFor="date-put-in-storage" className={styles.label}>
+          <label htmlFor="dateAdded" className={styles.label}>
             Date Put in Storage
           </label>
           <input
             type="date"
-            name="date-put-in-storage"
-            id="date-put-in-storage"
+            name="dateAdded"
+            id="dateAdded"
             className={styles.input}
             required
+            value={formData.dateAdded}
+            onChange={handleChange}
           />
         </div>
         <div>
-          <label htmlFor="expiration-date" className={styles.label}>
+          <label htmlFor="expiryDate" className={styles.label}>
             Expiration Date (Optional)
           </label>
           <input
             type="date"
-            name="expiration-date"
-            id="expiration-date"
+            name="expiryDate"
+            id="expiryDate"
             className={styles.input}
+            value={formData.expiryDate}
+            onChange={handleChange}
           />
         </div>
         <div>
@@ -106,19 +161,24 @@ export default function AddItemForm() {
             id="barcode"
             className={styles.input}
             placeholder="e.g., 01234567890"
+            value={formData.barcode}
+            onChange={handleChange}
           />
         </div>
         <div>
-          <label htmlFor="storage-area" className={styles.label}>
+          <label htmlFor="storageAreaId" className={styles.label}>
             Storage Area
           </label>
           <select
-            id="storage-area"
-            name="storage-area"
+            id="storageAreaId"
+            name="storageAreaId"
             className={styles.select}
             required
-            value={selectedStorageArea}
-            onChange={(e) => setSelectedStorageArea(e.target.value)}
+            value={formData.storageAreaId}
+            onChange={(e) => {
+              handleChange(e);
+              setSelectedStorageArea(e.target.value);
+            }}
           >
             <option value="">Select a storage area</option>
             {storageAreas.map((area) => (
@@ -129,14 +189,16 @@ export default function AddItemForm() {
           </select>
         </div>
         <div>
-          <label htmlFor="group" className={styles.label}>
+          <label htmlFor="groupId" className={styles.label}>
             Group (Optional)
           </label>
           <select
-            id="group"
-            name="group"
+            id="groupId"
+            name="groupId"
             className={styles.select}
             disabled={!selectedStorageArea}
+            value={formData.groupId}
+            onChange={handleChange}
           >
             <option value="">Select a group</option>
             {filteredGroups.map((group) => (
@@ -147,11 +209,8 @@ export default function AddItemForm() {
           </select>
         </div>
         <div className={styles.buttonContainer}>
-          <button
-            type="submit"
-            className={styles.button}
-          >
-            Add Item
+          <button type="submit" className={styles.button}>
+            {editingItem ? "Update Item" : "Add Item"}
           </button>
         </div>
       </form>

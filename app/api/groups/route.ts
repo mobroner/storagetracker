@@ -19,7 +19,12 @@ export async function GET() {
     LEFT JOIN storage_areas sa ON sag.storage_area_id = sa.id
     WHERE ig.user_id = $1
     GROUP BY ig.id, ig.group_name
-    ORDER BY ig.group_name`,
+    ORDER BY
+      CASE
+        WHEN ig.group_name = 'Not in Storage' THEN 1
+        ELSE 0
+      END,
+      ig.group_name`,
     [userId]
   );
   console.log('API /api/groups GET result.rows:', result.rows);

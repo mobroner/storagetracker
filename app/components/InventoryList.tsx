@@ -6,11 +6,21 @@ import SelectGroupModal from "./SelectGroupModal";
 import { Item, ItemsByStorageArea } from "@/app/lib/definitions";
 import styles from "./InventoryList.module.css";
 
+import { Group } from "@/app/lib/definitions";
+
 interface InventoryListProps {
   itemsByStorageArea: ItemsByStorageArea;
+  setEditingItem: (item: Item) => void;
+  filteredGroups: Group[];
+  setSelectedStorageArea: (id: string) => void;
 }
 
-export default function InventoryList({ itemsByStorageArea }: InventoryListProps) {
+export default function InventoryList({
+  itemsByStorageArea,
+  setEditingItem,
+  filteredGroups,
+  setSelectedStorageArea,
+}: InventoryListProps) {
   const { groups, refreshData } = useStore();
   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>(
     Object.keys(itemsByStorageArea).reduce((acc, key) => {
@@ -25,18 +35,19 @@ export default function InventoryList({ itemsByStorageArea }: InventoryListProps
     setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
 
-  async function updateQuantity(itemId: string, newQuantity: number) {
+  async function updateQuantity(id: string, newQuantity: number) {
     const allItems: Item[] = Object.values(itemsByStorageArea).flatMap((groups) => Object.values(groups).flat());
-    const item = allItems.find((item: Item) => item.id === itemId);
+    const item = allItems.find((item: Item) => item.id === id);
 
     if (item && item.quantity === 0 && newQuantity > 0) {
-      setSelectedItemId(itemId);
+      setSelectedItemId(id);
+      setSelectedStorageArea(item.storage_area_id);
       setShowModal(true);
     } else if (newQuantity >= 0) {
       await fetch("/api/items", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ itemId, quantity: newQuantity }),
+        body: JSON.stringify({ id, quantity: newQuantity }),
       });
       refreshData();
     }
@@ -47,7 +58,7 @@ export default function InventoryList({ itemsByStorageArea }: InventoryListProps
       await fetch("/api/items", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ itemId: selectedItemId, quantity: 1, groupId }),
+        body: JSON.stringify({ id: selectedItemId, quantity: 1, groupId }),
       });
       setShowModal(false);
       setSelectedItemId(null);
@@ -55,11 +66,11 @@ export default function InventoryList({ itemsByStorageArea }: InventoryListProps
     }
   }
 
-  async function deleteItem(itemId: string) {
+  async function deleteItem(id: string) {
     await fetch("/api/items", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ itemId }),
+      body: JSON.stringify({ id }),
     });
     refreshData();
   }
@@ -68,7 +79,7 @@ export default function InventoryList({ itemsByStorageArea }: InventoryListProps
     <div className={styles.card}>
       {showModal && (
         <SelectGroupModal
-          groups={groups}
+          groups={filteredGroups}
           onClose={() => setShowModal(false)}
           onSelect={handleSelectGroup}
         />
@@ -134,7 +145,10 @@ export default function InventoryList({ itemsByStorageArea }: InventoryListProps
                               <td className={styles.addedDateData}>{new Date(item.date_added).toLocaleDateString()}</td>
                               <td className={styles.expiresData}>{item.expiry_date ? new Date(item.expiry_date).toLocaleDateString() : "N/A"}</td>
                               <td className={`${styles.actionsData} ${styles.actionsContainer}`}>
-                                <button className={styles.actionButton}>
+                                <button
+                                  onClick={() => setEditingItem(item)}
+                                  className={styles.actionButton}
+                                >
                                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fillRule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clipRule="evenodd" /></svg>
                                 </button>
                                 <button

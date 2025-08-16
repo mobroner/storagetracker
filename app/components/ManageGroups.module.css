@@ -82,7 +82,7 @@
 }
 
 .editButton {
-  color: rgb(var(--secondary));
+  color: rgb(var(--primary));
   transition: color 0.3s;
 }
 

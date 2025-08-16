@@ -10,6 +10,9 @@ export interface Item {
   quantity: number;
   date_added: string;
   expiry_date: string | null;
+  barcode: string | null;
+  storage_area_id: string;
+  group_id: string | null;
 }
 
 export interface StorageArea {

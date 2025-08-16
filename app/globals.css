@@ -5,6 +5,7 @@
   --card-border: 229 231 235;
   --header-background: 30 55 84;
   --header-foreground: 245 241 229;
+  --welcome-foreground: 245 241 229;
   --primary: 71 107 141;
   --secondary: 228 107 78;
   --danger: 239 68 68;
@@ -16,8 +17,9 @@
     --foreground: 245 241 229;
     --card-background: 71 107 141;
     --card-border: 107 114 128;
-    --header-background: 245 241 229;
+    --header-background: 234 228 211;
     --header-foreground: 30 55 84;
+    --welcome-foreground: 228 107 78;
     --primary: 228 107 78;
     --secondary: 245 241 229;
     --danger: 248 113 113;

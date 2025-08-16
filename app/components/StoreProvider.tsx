@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { User, ItemsByStorageArea, StorageArea, Group } from "@/app/lib/definitions";
 
 interface StoreContextType {
@@ -41,6 +41,12 @@ export function StoreProvider({
   const [groups, setGroups] = useState<Group[]>(initialData.groups);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(initialData.user);
+
+  useEffect(() => {
+    if (user) {
+      refreshData();
+    }
+  }, [user]);
 
   const login = (userData: User) => {
     setUser(userData);

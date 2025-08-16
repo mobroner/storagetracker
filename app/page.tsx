@@ -9,6 +9,7 @@ import { useStore } from "./components/StoreProvider";
 import styles from "./page.module.css";
 import { Item } from "./lib/definitions";
 
+// An extra comment to force a re-save
 export default function Home() {
   const { itemsByStorageArea, groups } = useStore();
   const [editingItem, setEditingItem] = useState<Item | null>(null);

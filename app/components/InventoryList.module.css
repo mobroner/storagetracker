@@ -49,21 +49,22 @@
 .table {
   min-width: 100%;
   background-color: rgb(var(--card-background));
-  border-radius: 0.5rem;
   table-layout: fixed;
   width: 100%;
+  border-collapse: collapse;
+  border: 1px solid rgb(var(--card-border));
 }
 
 .table th {
   padding: 0.25rem 0.5rem;
-  border-bottom: 1px solid rgb(var(--card-border));
+  border: 1px solid rgb(var(--card-border));
   text-align: left;
   font-size: 0.875rem;
 }
 
 .table td {
   padding: 0.25rem 0.5rem;
-  border-bottom: 1px solid rgb(var(--card-border));
+  border: 1px solid rgb(var(--card-border));
   font-size: 0.875rem;
   word-break: break-word;
 }
@@ -125,4 +126,20 @@
 
 .deleteButton:hover {
   color: rgb(var(--danger));
+}
+
+@media (max-width: 768px) {
+  .table {
+    table-layout: auto;
+  }
+
+  .actionsContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .actionButton:not(:last-child) {
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+  }
 }

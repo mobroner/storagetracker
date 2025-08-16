@@ -3,14 +3,14 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background-color: rgb(var(--card-background));
+  background-color: rgb(var(--header-background));
   border-bottom: 1px solid rgb(var(--card-border));
 }
 
 .logo {
   font-size: 1.25rem;
   font-weight: 700;
-  color: rgb(var(--foreground));
+  color: rgb(var(--header-foreground));
 }
 
 .nav {

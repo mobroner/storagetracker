@@ -103,11 +103,11 @@ export default function InventoryList({ itemsByStorageArea }: InventoryListProps
                       <table className={styles.table}>
                         <thead>
                           <tr>
-                            <th style={{ width: '30%' }}>Item</th>
-                            <th style={{ width: '15%' }} className="text-center">Quantity</th>
-                            <th style={{ width: '25%' }} className="text-center">Added Date</th>
-                            <th style={{ width: '15%' }} className="text-center">Expires</th>
-                            <th style={{ width: '15%' }} className="text-center">Actions</th>
+                            <th>Item</th>
+                            <th className="text-center">Quantity</th>
+                            <th className="text-center">Added Date</th>
+                            <th className="text-center">Expires</th>
+                            <th className="text-center">Actions</th>
                           </tr>
                         </thead>
                         <tbody>

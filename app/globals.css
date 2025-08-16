@@ -3,6 +3,8 @@
   --foreground: 17 24 39;
   --card-background: 243 244 246;
   --card-border: 229 231 235;
+  --header-background: 219 234 254;
+  --header-foreground: 30 64 175;
   --primary: 59 130 246;
   --secondary: 107 114 128;
   --accent: 245 158 11;
@@ -15,6 +17,8 @@
     --foreground: 255 255 255;
     --card-background: 31 41 55;
     --card-border: 55 65 81;
+    --header-background: 30 58 138;
+    --header-foreground: 209 213 219;
     --primary: 96 165 250;
     --secondary: 156 163 175;
     --accent: 251 191 36;

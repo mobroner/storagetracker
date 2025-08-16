@@ -53,8 +53,8 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
           groupId: editingItem.group_id || "",
         });
         setSelectedStorageArea(editingItem.storage_area_id);
-      }
-    }, [editingItem]);
+    }
+  }, [editingItem, setSelectedStorageArea]);
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
       event.preventDefault();
@@ -225,4 +225,5 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
   }
 );
 
+AddItemForm.displayName = "AddItemForm";
 export default AddItemForm;

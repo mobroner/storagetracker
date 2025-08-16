@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStore } from './StoreProvider';
 import Link from 'next/link';
+import Image from 'next/image';
 import styles from './Header.module.css';
 
 export default function Header() {
@@ -26,10 +27,13 @@ export default function Header() {
     <header className={styles.header}>
       <div className={styles.logo}>
         <Link href="/">
-          <img
+          <Image
             src="/logo.png"
             alt="Storage Tracker Logo"
+            width={156}
+            height={78}
             className={styles.logoImage}
+            unoptimized
           />
         </Link>
       </div>

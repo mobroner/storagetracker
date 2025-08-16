@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import AddItemForm from "./components/AddItemForm";
 import InventoryList from "./components/InventoryList";
 import ManageGroups from "./components/ManageGroups";
@@ -13,6 +13,7 @@ export default function Home() {
   const { itemsByStorageArea, groups } = useStore();
   const [editingItem, setEditingItem] = useState<Item | null>(null);
   const [selectedStorageArea, setSelectedStorageArea] = useState<string>('');
+  const addItemFormRef = useRef<HTMLDivElement>(null);
 
   const filteredGroups = useMemo(() => {
     if (!selectedStorageArea) {
@@ -28,7 +29,7 @@ export default function Home() {
   return (
     <main className={styles.container}>
       <div className={styles.grid}>
-        <div>
+        <div ref={addItemFormRef}>
           <AddItemForm
             editingItem={editingItem}
             setEditingItem={setEditingItem}
@@ -41,6 +42,7 @@ export default function Home() {
             setEditingItem={setEditingItem}
             filteredGroups={filteredGroups}
             setSelectedStorageArea={setSelectedStorageArea}
+            addItemFormRef={addItemFormRef}
           />
         </div>
         <div>

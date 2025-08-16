@@ -25,7 +25,7 @@ export default function InventoryList({
   setSelectedStorageArea,
   addItemFormRef,
 }: InventoryListProps) {
-  const { groups, refreshData } = useStore();
+  const { refreshData } = useStore();
   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>(
     Object.keys(itemsByStorageArea).reduce((acc, key) => {
       acc[key] = true;

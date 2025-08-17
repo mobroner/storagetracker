@@ -40,7 +40,6 @@ export default function Home() {
 
   function handleEditItem(item: Item) {
     setEditingItem(item);
-    setSelectedStorageArea(item.storage_area_id);
     addItemFormRef.current?.scrollIntoView({ behavior: "smooth" });
   }
 

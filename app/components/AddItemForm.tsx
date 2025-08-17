@@ -53,8 +53,9 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
           storageAreaId: editingItem.storage_area_id,
           groupId: editingItem.group_id || "",
         });
+        setSelectedStorageArea(editingItem.storage_area_id);
       }
-    }, [editingItem]);
+    }, [editingItem, setSelectedStorageArea]);
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
       event.preventDefault();

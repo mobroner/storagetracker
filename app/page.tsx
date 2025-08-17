@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import AddItemForm from "./components/AddItemForm";
 import InventoryList from "./components/InventoryList";
 import ManageGroups from "./components/ManageGroups";
@@ -15,6 +15,7 @@ export default function Home() {
   const [editingItem, setEditingItem] = useState<Item | null>(null);
   const [selectedStorageArea, setSelectedStorageArea] = useState<string>('');
   const [modalGroups, setModalGroups] = useState<Group[]>([]);
+  const [filteredGroups, setFilteredGroups] = useState<Group[]>([]);
   const addItemFormRef = useRef<HTMLDivElement>(null);
 
   const notInStorageGroup = useMemo(
@@ -22,16 +23,19 @@ export default function Home() {
     [groups]
   );
 
-  const filteredGroups = useMemo(() => {
+  useEffect(() => {
     if (!selectedStorageArea) {
-      return groups.filter((group) => group.group_name !== "Not in Storage");
+      setFilteredGroups(groups.filter((group) => group.group_name !== "Not in Storage"));
+    } else {
+      setFilteredGroups(
+        groups.filter(
+          (group) =>
+            group.group_name !== "Not in Storage" &&
+            Array.isArray(group.storage_area_ids) &&
+            group.storage_area_ids.map(String).includes(selectedStorageArea)
+        )
+      );
     }
-    return groups.filter(
-      (group) =>
-        group.group_name !== "Not in Storage" &&
-        Array.isArray(group.storage_area_ids) &&
-        group.storage_area_ids.map(String).includes(selectedStorageArea)
-    );
   }, [selectedStorageArea, groups]);
 
   function handleEditItem(item: Item) {

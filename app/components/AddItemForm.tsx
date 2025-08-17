@@ -93,6 +93,9 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
 
     return (
       <div className={styles.card} ref={ref}>
+        <pre>
+          {JSON.stringify({ filteredGroups, selectedStorageArea }, null, 2)}
+        </pre>
         <h2 className={styles.title}>
           {editingItem ? "Edit Item" : "Add New Item"}
         </h2>

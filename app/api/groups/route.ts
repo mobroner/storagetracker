@@ -28,7 +28,7 @@ export async function GET() {
     [userId]
   );
   console.log('API /api/groups GET result.rows:', JSON.stringify(result.rows, null, 2));
-  return NextResponse.json(result.rows);
+  return NextResponse.json(result.rows, { headers: { 'Cache-Control': 'no-store' } });
 }
 
 export async function POST(request: NextRequest) {

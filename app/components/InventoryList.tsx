@@ -14,6 +14,7 @@ import { RefObject } from "react";
 interface InventoryListProps {
   itemsByStorageArea: ItemsByStorageArea;
   handleEditItem: (item: Item) => void;
+  debugMessage: string;
   modalGroups: Group[];
   setModalGroups: (groups: Group[]) => void;
   setSelectedStorageArea: (id: string) => void;
@@ -23,6 +24,7 @@ interface InventoryListProps {
 export default function InventoryList({
   itemsByStorageArea,
   handleEditItem,
+  debugMessage,
   modalGroups,
   setModalGroups,
   setSelectedStorageArea,
@@ -92,6 +94,7 @@ export default function InventoryList({
 
   return (
     <div className={styles.card}>
+      {debugMessage && <p>{debugMessage}</p>}
       {showModal && (
         <SelectGroupModal
           groups={modalGroups}

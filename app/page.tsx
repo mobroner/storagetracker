@@ -16,6 +16,7 @@ export default function Home() {
   const [selectedStorageArea, setSelectedStorageArea] = useState<string>('');
   const [modalGroups, setModalGroups] = useState<Group[]>([]);
   const [filteredGroups, setFilteredGroups] = useState<Group[]>([]);
+  const [debugMessage, setDebugMessage] = useState<string>("");
   const addItemFormRef = useRef<HTMLDivElement>(null);
 
   const notInStorageGroup = useMemo(
@@ -40,6 +41,7 @@ export default function Home() {
 
   function handleEditItem(item: Item) {
     setEditingItem(item);
+    setDebugMessage(`You have clicked edit and storage id is ${item.storage_area_id}`);
     addItemFormRef.current?.scrollIntoView({ behavior: "smooth" });
   }
 
@@ -58,6 +60,7 @@ export default function Home() {
           <InventoryList
             itemsByStorageArea={itemsByStorageArea}
             handleEditItem={handleEditItem}
+            debugMessage={debugMessage}
             modalGroups={modalGroups}
             setModalGroups={setModalGroups}
             setSelectedStorageArea={setSelectedStorageArea}

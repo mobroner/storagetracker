@@ -16,7 +16,6 @@ export default function Home() {
   const [selectedStorageArea, setSelectedStorageArea] = useState<string>('');
   const [modalGroups, setModalGroups] = useState<Group[]>([]);
   const [filteredGroups, setFilteredGroups] = useState<Group[]>([]);
-  const [debugMessage, setDebugMessage] = useState<string>("");
   const addItemFormRef = useRef<HTMLDivElement>(null);
 
   const notInStorageGroup = useMemo(
@@ -25,6 +24,10 @@ export default function Home() {
   );
 
   useEffect(() => {
+    if (editingItem && selectedStorageArea === editingItem.storage_area_id) {
+      return;
+    }
+
     if (!selectedStorageArea) {
       setFilteredGroups(groups.filter((group) => group.group_name !== "Not in Storage"));
     } else {
@@ -37,11 +40,20 @@ export default function Home() {
         )
       );
     }
-  }, [selectedStorageArea, groups]);
+  }, [selectedStorageArea, groups, editingItem]);
 
   function handleEditItem(item: Item) {
+    const storageAreaId = item.storage_area_id;
+    setSelectedStorageArea(storageAreaId);
+    setFilteredGroups(
+      groups.filter(
+        (group) =>
+          group.group_name !== "Not in Storage" &&
+          Array.isArray(group.storage_area_ids) &&
+          group.storage_area_ids.map(String).includes(storageAreaId)
+      )
+    );
     setEditingItem(item);
-    setDebugMessage(`You have clicked edit and storage id is ${item.storage_area_id}`);
     addItemFormRef.current?.scrollIntoView({ behavior: "smooth" });
   }
 
@@ -60,7 +72,6 @@ export default function Home() {
           <InventoryList
             itemsByStorageArea={itemsByStorageArea}
             handleEditItem={handleEditItem}
-            debugMessage={debugMessage}
             modalGroups={modalGroups}
             setModalGroups={setModalGroups}
             setSelectedStorageArea={setSelectedStorageArea}

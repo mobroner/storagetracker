@@ -53,9 +53,8 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
           storageAreaId: editingItem.storage_area_id,
           groupId: editingItem.group_id || "",
         });
-        setSelectedStorageArea(editingItem.storage_area_id);
       }
-    }, [editingItem, setSelectedStorageArea]);
+    }, [editingItem]);
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
       event.preventDefault();
@@ -94,9 +93,6 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
 
     return (
       <div className={styles.card} ref={ref}>
-        <pre>
-          {JSON.stringify({ filteredGroups, selectedStorageArea }, null, 2)}
-        </pre>
         <h2 className={styles.title}>
           {editingItem ? "Edit Item" : "Add New Item"}
         </h2>

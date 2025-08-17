@@ -13,7 +13,7 @@ import { RefObject } from "react";
 // An extra comment to force a re-save
 interface InventoryListProps {
   itemsByStorageArea: ItemsByStorageArea;
-  setEditingItem: (item: Item) => void;
+  handleEditItem: (item: Item) => void;
   modalGroups: Group[];
   setModalGroups: (groups: Group[]) => void;
   setSelectedStorageArea: (id: string) => void;
@@ -22,7 +22,7 @@ interface InventoryListProps {
 
 export default function InventoryList({
   itemsByStorageArea,
-  setEditingItem,
+  handleEditItem,
   modalGroups,
   setModalGroups,
   setSelectedStorageArea,
@@ -161,11 +161,7 @@ export default function InventoryList({
                               <td className={styles.expiresData}>{item.expiry_date ? new Date(item.expiry_date).toLocaleDateString() : "N/A"}</td>
                               <td className={`${styles.actionsData} ${styles.actionsContainer}`}>
                                 <button
-                                  onClick={() => {
-                                    setEditingItem(item);
-                                    setSelectedStorageArea(item.storage_area_id);
-                                    addItemFormRef.current?.scrollIntoView({ behavior: "smooth" });
-                                  }}
+                                  onClick={() => handleEditItem(item)}
                                   className={styles.actionButton}
                                 >
                                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fillRule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clipRule="evenodd" /></svg>

@@ -34,6 +34,12 @@ export default function Home() {
     );
   }, [selectedStorageArea, groups]);
 
+  function handleEditItem(item: Item) {
+    setEditingItem(item);
+    setSelectedStorageArea(item.storage_area_id);
+    addItemFormRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
+
   return (
     <main className={styles.container}>
       <div className={styles.grid}>
@@ -48,7 +54,7 @@ export default function Home() {
           />
           <InventoryList
             itemsByStorageArea={itemsByStorageArea}
-            setEditingItem={setEditingItem}
+            handleEditItem={handleEditItem}
             modalGroups={modalGroups}
             setModalGroups={setModalGroups}
             setSelectedStorageArea={setSelectedStorageArea}

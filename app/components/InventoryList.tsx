@@ -6,8 +6,6 @@ import SelectLocationModal from "./SelectLocationModal";
 import { Item, ItemsByStorageArea, Location } from "@/app/lib/definitions";
 import styles from "./InventoryList.module.css";
 
-import { RefObject } from "react";
-
 interface InventoryListProps {
   itemsByStorageArea: ItemsByStorageArea;
   handleEditItem: (item: Item) => void;

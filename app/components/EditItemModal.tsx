@@ -43,7 +43,7 @@ export default function EditItemModal({ item, onClose, onSave }: EditItemModalPr
   // Initial validation and data loading
   useEffect(() => {
     const validateInitialData = () => {
-      let updates: Partial<typeof formData> = {};
+      const updates: Partial<typeof formData> = {};
       let needsUpdate = false;
 
       // Validate location
@@ -78,7 +78,14 @@ export default function EditItemModal({ item, onClose, onSave }: EditItemModalPr
     };
 
     validateInitialData();
-  }, []);
+  }, [
+    formData.locationId,
+    formData.storageAreaId,
+    formData.categoryId,
+    formData.subcategoryId,
+    locations,
+    subcategories
+  ]);
 
   // Validate relationships when parent IDs change
   useEffect(() => {
@@ -92,7 +99,7 @@ export default function EditItemModal({ item, onClose, onSave }: EditItemModalPr
         setFormData((prev) => ({ ...prev, locationId: "" }));
       }
     }
-  }, [formData.storageAreaId, locations]);
+  }, [formData.storageAreaId, formData.locationId, locations]);
 
   useEffect(() => {
     if (formData.categoryId) {
@@ -105,7 +112,7 @@ export default function EditItemModal({ item, onClose, onSave }: EditItemModalPr
         setFormData((prev) => ({ ...prev, subcategoryId: "" }));
       }
     }
-  }, [formData.categoryId, subcategories]);
+  }, [formData.categoryId, formData.subcategoryId, subcategories]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();

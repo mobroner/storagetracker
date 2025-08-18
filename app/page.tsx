@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import AddItemForm from "./components/AddItemForm";
 import InventoryList from "./components/InventoryList";
 import ManageLocations from "./components/ManageLocations";

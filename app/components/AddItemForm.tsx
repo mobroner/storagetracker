@@ -1,33 +1,32 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect, forwardRef } from "react";
+import { useState, forwardRef } from "react";
 import { useStore } from "./StoreProvider";
 import styles from "./AddItemForm.module.css";
-import { Item, Location } from "@/app/lib/definitions";
+import { Location, Subcategory } from "@/app/lib/definitions";
 
-// An extra comment to force a re-save
 interface AddItemFormProps {
-  editingItem: Item | null;
-  setEditingItem: (item: Item | null) => void;
   filteredLocations: Location[];
   selectedStorageArea: string;
   setSelectedStorageArea: (id: string) => void;
+  filteredSubcategories: Subcategory[];
+  setSelectedCategory: (id: string) => void;
 }
 
 const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
   (
     {
-      editingItem,
-      setEditingItem,
       filteredLocations,
       selectedStorageArea,
       setSelectedStorageArea,
+      filteredSubcategories,
+      setSelectedCategory,
     },
     ref
   ) => {
     const router = useRouter();
-    const { storageAreas, categories, subcategories, refreshData } = useStore();
+    const { storageAreas, categories, refreshData } = useStore();
     const [formData, setFormData] = useState({
       itemName: "",
       quantity: "1",
@@ -39,29 +38,6 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
       subcategoryId: "",
     });
 
-    useEffect(() => {
-      if (editingItem) {
-        const isValidLocation =
-          editingItem.location_id &&
-          filteredLocations.some((location) => location.id === editingItem.location_id);
-
-        setFormData({
-          itemName: editingItem.item_name,
-          quantity: String(editingItem.quantity),
-          dateAdded: new Date(editingItem.date_added)
-            .toISOString()
-            .split("T")[0],
-          expiryDate: editingItem.expiry_date
-            ? new Date(editingItem.expiry_date).toISOString().split("T")[0]
-            : "",
-          storageAreaId: editingItem.storage_area_id,
-          locationId: isValidLocation ? editingItem.location_id || "" : "",
-          categoryId: editingItem.category_id || "",
-          subcategoryId: editingItem.subcategory_id || "",
-        });
-      }
-    }, [editingItem, filteredLocations]);
-
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
       event.preventDefault();
 
@@ -70,18 +46,12 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
         quantity: parseInt(formData.quantity, 10),
       };
 
-      const method = editingItem ? "PUT" : "POST";
-      const body = editingItem
-        ? JSON.stringify({ ...submissionData, id: editingItem.id })
-        : JSON.stringify(submissionData);
-
       await fetch("/api/items", {
-        method,
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body,
+        body: JSON.stringify(submissionData),
       });
 
-      setEditingItem(null);
       setFormData({
         itemName: "",
         quantity: "1",
@@ -92,10 +62,10 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
         categoryId: "",
         subcategoryId: "",
       });
-    setSelectedStorageArea("");
-    router.refresh();
-    refreshData();
-  }
+      setSelectedStorageArea("");
+      router.refresh();
+      refreshData();
+    }
 
     function handleChange(
       event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -112,13 +82,9 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
 
     return (
       <div className={styles.card} ref={ref}>
-        <h2 className={styles.title}>
-          {editingItem ? "Edit Item" : "Add New Item"}
-        </h2>
+        <h2 className={styles.title}>Add New Item</h2>
         <p className={styles.description}>
-          {editingItem
-            ? "Update the details of your item."
-            : "Add a new food item to your freezer inventory."}
+          Add a new food item to your freezer inventory.
         </p>
         <form onSubmit={handleSubmit} className={styles.form}>
           <div>
@@ -229,7 +195,10 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
               name="categoryId"
               className={styles.select}
               value={formData.categoryId}
-              onChange={handleChange}
+              onChange={(e) => {
+                handleChange(e);
+                setSelectedCategory(e.target.value);
+              }}
             >
               <option value="">Select a category</option>
               {[...categories]
@@ -254,8 +223,7 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
               onChange={handleChange}
             >
               <option value="">Select a subcategory</option>
-              {subcategories
-                .filter((subcategory) => String(subcategory.category_id) === formData.categoryId)
+              {filteredSubcategories
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((subcategory) => (
                   <option key={subcategory.id} value={subcategory.id}>
@@ -266,7 +234,7 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
           </div>
           <div className={styles.buttonContainer}>
             <button type="submit" className={styles.button}>
-              {editingItem ? "Update Item" : "Add Item"}
+              Add Item
             </button>
           </div>
         </form>

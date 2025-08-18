@@ -7,8 +7,8 @@
   justify-content: center;
 }
 
-.card {
-  background-color: rgb(var(--card-background));
+.modal {
+  background-color: rgb(var(--background));
   color: rgb(var(--foreground));
   padding: 1.5rem;
   border-radius: 0.5rem;
@@ -17,7 +17,7 @@
   max-width: 500px;
 }
 
-.header {
+.modalHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -27,6 +27,10 @@
 .title {
   font-size: 1.25rem;
   font-weight: 700;
+}
+
+.modalBody {
+  margin-top: 1rem;
 }
 
 .closeButton {

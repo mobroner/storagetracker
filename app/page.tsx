@@ -5,17 +5,20 @@ import AddItemForm from "./components/AddItemForm";
 import InventoryList from "./components/InventoryList";
 import ManageLocations from "./components/ManageLocations";
 import ManageStorageAreas from "./components/ManageStorageAreas";
+import EditItemModal from "./components/EditItemModal";
 import { useStore } from "./components/StoreProvider";
 import styles from "./page.module.css";
-import { Item, Location } from "./lib/definitions";
+import { Item, Location, Subcategory } from "./lib/definitions";
 
 // An extra comment to force a re-save
 export default function Home() {
-  const { itemsByStorageArea, locations } = useStore();
+  const { itemsByStorageArea, locations, subcategories, refreshData } = useStore();
   const [editingItem, setEditingItem] = useState<Item | null>(null);
   const [selectedStorageArea, setSelectedStorageArea] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [modalLocations, setModalLocations] = useState<Location[]>([]);
   const [filteredLocations, setFilteredLocations] = useState<Location[]>([]);
+  const [filteredSubcategories, setFilteredSubcategories] = useState<Subcategory[]>([]);
   const addItemFormRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -37,32 +40,42 @@ export default function Home() {
     }
   }, [selectedStorageArea, locations, editingItem]);
 
+  useEffect(() => {
+    if (selectedCategory) {
+      setFilteredSubcategories(
+        subcategories.filter(
+          (subcategory) => String(subcategory.category_id) === selectedCategory
+        )
+      );
+    } else {
+      setFilteredSubcategories([]);
+    }
+  }, [selectedCategory, subcategories]);
+
   function handleEditItem(item: Item) {
-    const storageAreaId = item.storage_area_id;
-    setSelectedStorageArea(storageAreaId);
-    setFilteredLocations(
-      locations.filter((location) => {
-        const isCorrectLocation =
-          location.storage_area_ids &&
-          Array.isArray(location.storage_area_ids) &&
-          location.storage_area_ids.map(String).includes(storageAreaId);
-        return location.location_name !== "Not in Storage" && isCorrectLocation;
-      })
-    );
     setEditingItem(item);
-    addItemFormRef.current?.scrollIntoView({ behavior: "smooth" });
   }
 
   return (
     <main className={styles.container}>
+      {editingItem && (
+        <EditItemModal
+          item={editingItem}
+          onClose={() => setEditingItem(null)}
+          onSave={() => {
+            setEditingItem(null);
+            refreshData();
+          }}
+        />
+      )}
       <div className={styles.grid}>
         <div>
           <AddItemForm
-            editingItem={editingItem}
-            setEditingItem={setEditingItem}
             filteredLocations={filteredLocations}
             selectedStorageArea={selectedStorageArea}
             setSelectedStorageArea={setSelectedStorageArea}
+            filteredSubcategories={filteredSubcategories}
+            setSelectedCategory={setSelectedCategory}
             ref={addItemFormRef}
           />
           <InventoryList

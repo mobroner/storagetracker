@@ -46,12 +46,13 @@ export default function Home() {
     const storageAreaId = item.storage_area_id;
     setSelectedStorageArea(storageAreaId);
     setFilteredGroups(
-      groups.filter(
-        (group) =>
-          group.group_name !== "Not in Storage" &&
+      groups.filter((group) => {
+        const isCorrectGroup =
+          group.storage_area_ids &&
           Array.isArray(group.storage_area_ids) &&
-          group.storage_area_ids.map(String).includes(storageAreaId)
-      )
+          group.storage_area_ids.map(String).includes(storageAreaId);
+        return group.group_name !== "Not in Storage" && isCorrectGroup;
+      })
     );
     setEditingItem(item);
     addItemFormRef.current?.scrollIntoView({ behavior: "smooth" });

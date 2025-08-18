@@ -40,6 +40,10 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
 
     useEffect(() => {
       if (editingItem) {
+        const isValidGroup =
+          editingItem.group_id &&
+          filteredGroups.some((group) => group.id === editingItem.group_id);
+
         setFormData({
           itemName: editingItem.item_name,
           quantity: String(editingItem.quantity),
@@ -51,10 +55,10 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
             : "",
           barcode: editingItem.barcode || "",
           storageAreaId: editingItem.storage_area_id,
-          groupId: editingItem.group_id || "",
+          groupId: isValidGroup ? editingItem.group_id || "" : "",
         });
       }
-    }, [editingItem]);
+    }, [editingItem, filteredGroups]);
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
       event.preventDefault();

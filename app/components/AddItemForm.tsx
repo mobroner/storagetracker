@@ -232,11 +232,13 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
               onChange={handleChange}
             >
               <option value="">Select a category</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
+              {[...categories]
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
             </select>
           </div>
           <div>
@@ -254,6 +256,7 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
               <option value="">Select a subcategory</option>
               {subcategories
                 .filter((subcategory) => String(subcategory.category_id) === formData.categoryId)
+                .sort((a, b) => a.name.localeCompare(b.name))
                 .map((subcategory) => (
                   <option key={subcategory.id} value={subcategory.id}>
                     {subcategory.name}

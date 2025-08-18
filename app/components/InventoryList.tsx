@@ -14,7 +14,6 @@ interface InventoryListProps {
   modalLocations: Location[];
   setModalLocations: (locations: Location[]) => void;
   setSelectedStorageArea: (id: string) => void;
-  addItemFormRef: RefObject<HTMLDivElement | null>;
 }
 
 export default function InventoryList({
@@ -23,7 +22,6 @@ export default function InventoryList({
   modalLocations,
   setModalLocations,
   setSelectedStorageArea,
-  addItemFormRef,
 }: InventoryListProps) {
   const { locations, categories, subcategories, refreshData } = useStore();
   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>(

@@ -18,11 +18,6 @@ export default function Home() {
   const [filteredLocations, setFilteredLocations] = useState<Location[]>([]);
   const addItemFormRef = useRef<HTMLDivElement>(null);
 
-  const notInStorageLocation = useMemo(
-    () => locations.find((location) => location.location_name === "Not in Storage"),
-    [locations]
-  );
-
   useEffect(() => {
     if (editingItem && selectedStorageArea === editingItem.storage_area_id) {
       return;
@@ -76,7 +71,6 @@ export default function Home() {
             modalLocations={modalLocations}
             setModalLocations={setModalLocations}
             setSelectedStorageArea={setSelectedStorageArea}
-            addItemFormRef={addItemFormRef}
           />
         </div>
         <div>

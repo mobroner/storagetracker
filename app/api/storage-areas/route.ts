@@ -4,6 +4,10 @@ import { getUserId } from '@/app/lib/auth';
 import { NextRequest } from 'next/server';
 import { StorageArea } from '@/app/lib/definitions';
 
+interface StorageAreaFromDB extends Omit<StorageArea, 'id'> {
+  id: number;
+}
+
 export async function GET() {
   const userId = await getUserId();
   if (!userId) {
@@ -11,7 +15,7 @@ export async function GET() {
   }
 
   const result = await db.query(`SELECT * FROM storage_areas WHERE user_id = $1 ORDER BY name`, [userId]);
-  const storageAreas: StorageArea[] = result.rows.map((row: any) => ({
+  const storageAreas: StorageArea[] = result.rows.map((row: StorageAreaFromDB) => ({
     ...row,
     id: String(row.id),
   }));

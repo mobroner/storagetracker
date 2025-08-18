@@ -3,6 +3,12 @@ import { NextResponse } from 'next/server';
 import { getUserId } from '@/app/lib/auth';
 import { Item } from '@/app/lib/definitions';
 
+interface ItemFromDB extends Omit<Item, 'id'> {
+  id: number;
+  storage_area_name: string;
+  location_name: string | null;
+}
+
 interface ItemsByStorageArea {
   [storageAreaName: string]: {
     [locationName: string]: Item[];
@@ -45,7 +51,7 @@ export async function GET() {
     [userId]
   );
 
-  const itemsByStorageArea = result.rows.reduce((acc: ItemsByStorageArea, item: any) => {
+  const itemsByStorageArea = result.rows.reduce((acc: ItemsByStorageArea, item: ItemFromDB) => {
     const { storage_area_name, location_name, ...itemData } = item;
     if (!acc[storage_area_name]) {
       acc[storage_area_name] = {};

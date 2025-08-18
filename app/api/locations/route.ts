@@ -4,6 +4,11 @@ import { getUserId } from '@/app/lib/auth';
 import { NextRequest } from 'next/server';
 import { Location } from '@/app/lib/definitions';
 
+interface LocationFromDB extends Omit<Location, 'id' | 'storage_area_ids'> {
+  id: number;
+  storage_area_ids: number[];
+}
+
 export async function GET() {
   const userId = await getUserId();
   if (!userId) {
@@ -28,7 +33,7 @@ export async function GET() {
       il.location_name`,
     [userId]
   );
-  const locations: Location[] = result.rows.map((row: any) => ({
+  const locations: Location[] = result.rows.map((row: LocationFromDB) => ({
     ...row,
     id: String(row.id),
     storage_area_ids: row.storage_area_ids.map(String),

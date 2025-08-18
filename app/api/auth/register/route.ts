@@ -1,6 +1,8 @@
 import { db } from '@/app/lib/db';
 import bcrypt from 'bcryptjs';
 import { NextResponse } from 'next/server';
+import { populateTaxonomyForUser, clearTaxonomyForUser } from '../../../../populate-taxonomy-detailed';
+import { Client } from 'pg';
 
 export async function POST(request: Request) {
   const data = await request.json();
@@ -19,6 +21,15 @@ export async function POST(request: Request) {
       [name, email, passwordHash]
     );
     const userId = result.rows[0].id;
+
+    const client = new Client({
+      connectionString: process.env.DATABASE_URL,
+    });
+    await client.connect();
+    await clearTaxonomyForUser(userId, client);
+    await populateTaxonomyForUser(userId, client);
+    await client.end();
+
     return NextResponse.json({ userId });
   } catch (error) {
     console.error(error);

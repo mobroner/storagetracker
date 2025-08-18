@@ -27,15 +27,16 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
     ref
   ) => {
     const router = useRouter();
-    const { storageAreas, refreshData } = useStore();
+    const { storageAreas, categories, subcategories, refreshData } = useStore();
     const [formData, setFormData] = useState({
       itemName: "",
       quantity: "1",
       dateAdded: "",
       expiryDate: "",
-      barcode: "",
       storageAreaId: "",
       locationId: "",
+      categoryId: "",
+      subcategoryId: "",
     });
 
     useEffect(() => {
@@ -53,19 +54,26 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
           expiryDate: editingItem.expiry_date
             ? new Date(editingItem.expiry_date).toISOString().split("T")[0]
             : "",
-          barcode: editingItem.barcode || "",
           storageAreaId: editingItem.storage_area_id,
           locationId: isValidLocation ? editingItem.location_id || "" : "",
+          categoryId: editingItem.category_id || "",
+          subcategoryId: editingItem.subcategory_id || "",
         });
       }
     }, [editingItem, filteredLocations]);
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
       event.preventDefault();
+
+      const submissionData = {
+        ...formData,
+        quantity: parseInt(formData.quantity, 10),
+      };
+
       const method = editingItem ? "PUT" : "POST";
       const body = editingItem
-        ? JSON.stringify({ ...formData, id: editingItem.id })
-        : JSON.stringify(formData);
+        ? JSON.stringify({ ...submissionData, id: editingItem.id })
+        : JSON.stringify(submissionData);
 
       await fetch("/api/items", {
         method,
@@ -79,10 +87,11 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
         quantity: "1",
         dateAdded: "",
         expiryDate: "",
-        barcode: "",
-      storageAreaId: "",
-      locationId: "",
-    });
+        storageAreaId: "",
+        locationId: "",
+        categoryId: "",
+        subcategoryId: "",
+      });
     setSelectedStorageArea("");
     router.refresh();
     refreshData();
@@ -92,7 +101,13 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
       event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) {
       const { name, value } = event.target;
-      setFormData((prev) => ({ ...prev, [name]: value }));
+      setFormData((prev) => {
+        const newFormData = { ...prev, [name]: value };
+        if (name === "categoryId") {
+          newFormData.subcategoryId = "";
+        }
+        return newFormData;
+      });
     }
 
     return (
@@ -163,20 +178,6 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
             />
           </div>
           <div>
-            <label htmlFor="barcode" className={styles.label}>
-              Barcode (Optional)
-            </label>
-            <input
-              type="text"
-              name="barcode"
-              id="barcode"
-              className={styles.input}
-              placeholder="e.g., 01234567890"
-              value={formData.barcode}
-              onChange={handleChange}
-            />
-          </div>
-          <div>
             <label htmlFor="storageAreaId" className={styles.label}>
               Storage Area
             </label>
@@ -217,6 +218,47 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
                   {location.location_name}
                 </option>
               ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="categoryId" className={styles.label}>
+              Category (Optional)
+            </label>
+            <select
+              id="categoryId"
+              name="categoryId"
+              className={styles.select}
+              value={formData.categoryId}
+              onChange={handleChange}
+            >
+              <option value="">Select a category</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="subcategoryId" className={styles.label}>
+              Subcategory (Optional)
+            </label>
+            <select
+              id="subcategoryId"
+              name="subcategoryId"
+              className={styles.select}
+              disabled={!formData.categoryId}
+              value={formData.subcategoryId}
+              onChange={handleChange}
+            >
+              <option value="">Select a subcategory</option>
+              {subcategories
+                .filter((subcategory) => String(subcategory.category_id) === formData.categoryId)
+                .map((subcategory) => (
+                  <option key={subcategory.id} value={subcategory.id}>
+                    {subcategory.name}
+                  </option>
+                ))}
             </select>
           </div>
           <div className={styles.buttonContainer}>

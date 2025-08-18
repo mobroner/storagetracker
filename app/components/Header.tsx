@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStore } from './StoreProvider';
 import Link from 'next/link';
@@ -10,8 +10,12 @@ import styles from './Header.module.css';
 export default function Header() {
   const router = useRouter();
   const { user, logout } = useStore();
-  const [showMenu, setShowMenu] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   async function handleLogout() {
     try {
@@ -23,8 +27,35 @@ export default function Header() {
     }
   }
 
+  async function handlePopulateTaxonomy() {
+    try {
+      const response = await fetch('/api/populate-taxonomy', { method: 'POST' });
+      if (response.ok) {
+        alert('Taxonomy populated successfully!');
+        toggleMenu();
+      } else {
+        const data = await response.json();
+        alert(`Failed to populate taxonomy: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('Failed to populate taxonomy', error);
+      alert('An error occurred while populating taxonomy.');
+    }
+  }
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <header className={styles.header}>
+      {isClient && user && (
+        <div className={styles.menuButton} onClick={toggleMenu}>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </div>
+      )}
       <div className={styles.logo}>
         <Link href="/">
           <Image
@@ -37,59 +68,34 @@ export default function Header() {
           />
         </Link>
       </div>
-      {user && (
-        <>
-          <div className={styles.nav}>
-            <span className={styles.welcome}>Welcome, {user.name}</span>
-            <div className="relative">
-              <button
-                onClick={() => setShowMenu(!showMenu)}
-                className={styles.menuButton}
-              >
-                Manage
-              </button>
-              {showMenu && (
-                <div className={styles.mobileMenu}>
-                  <Link href="/manage/storage-areas">
-                    Storage Areas
-                  </Link>
-                  <Link href="/manage/locations">
-                    Locations
-                  </Link>
-                </div>
-              )}
-            </div>
-            <button
-              onClick={handleLogout}
-              className={styles.logoutButton}
-            >
-              Logout
-            </button>
-          </div>
-          <div className={styles.mobileMenuButton}>
-            <button onClick={() => setShowMobileMenu(!showMobileMenu)}>
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-              </svg>
-            </button>
-          </div>
-        </>
+      {isClient && isMenuOpen && (
+        <div className={styles.overlay} onClick={toggleMenu}></div>
       )}
-      {showMobileMenu && user && (
-        <div className={styles.mobileMenu}>
-          <span className="block mb-2">Welcome, {user.name}</span>
-          <Link href="/manage/storage-areas">
-            Storage Areas
+      {isClient && (
+        <div className={`${styles.sidebar} ${isMenuOpen ? styles.open : ''}`}>
+          <div className={styles.sidebarHeader}>
+            <span>Welcome, {user?.name}</span>
+          </div>
+        <nav className={styles.sidebarNav}>
+          <Link href="/" onClick={toggleMenu} className={styles.navHeaderLink}>
+            Inventory List
           </Link>
-          <Link href="/manage/locations">
-            Locations
-          </Link>
-          <button
-            onClick={handleLogout}
-            className={styles.logoutButton}
-          >
+          <div className={styles.navSection}>
+            <h4 className={styles.navHeader}>Manage</h4>
+            <Link href="/manage/storage-areas" onClick={toggleMenu} className={styles.subLink}>
+              Storage Areas
+            </Link>
+            <Link href="/manage/locations" onClick={toggleMenu} className={styles.subLink}>
+              Locations
+            </Link>
+          </div>
+          <button onClick={handlePopulateTaxonomy} className={styles.logoutButton}>
+            Populate Taxonomy
+          </button>
+          <button onClick={handleLogout} className={styles.logoutButton}>
             Logout
           </button>
+        </nav>
         </div>
       )}
     </header>

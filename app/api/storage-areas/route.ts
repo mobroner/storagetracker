@@ -2,6 +2,7 @@ import { db } from '@/app/lib/db';
 import { NextResponse } from 'next/server';
 import { getUserId } from '@/app/lib/auth';
 import { NextRequest } from 'next/server';
+import { StorageArea } from '@/app/lib/definitions';
 
 export async function GET() {
   const userId = await getUserId();
@@ -10,7 +11,11 @@ export async function GET() {
   }
 
   const result = await db.query(`SELECT * FROM storage_areas WHERE user_id = $1 ORDER BY name`, [userId]);
-  return NextResponse.json(result.rows);
+  const storageAreas: StorageArea[] = result.rows.map((row: any) => ({
+    ...row,
+    id: String(row.id),
+  }));
+  return NextResponse.json(storageAreas);
 }
 
 export async function POST(request: NextRequest) {

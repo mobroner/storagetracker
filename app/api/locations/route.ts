@@ -2,6 +2,7 @@ import { db } from '@/app/lib/db';
 import { NextResponse } from 'next/server';
 import { getUserId } from '@/app/lib/auth';
 import { NextRequest } from 'next/server';
+import { Location } from '@/app/lib/definitions';
 
 export async function GET() {
   const userId = await getUserId();
@@ -27,8 +28,14 @@ export async function GET() {
       il.location_name`,
     [userId]
   );
-  console.log('API /api/locations GET result.rows:', JSON.stringify(result.rows, null, 2));
-  return NextResponse.json(result.rows, { headers: { 'Cache-Control': 'no-store' } });
+  const locations: Location[] = result.rows.map((row: any) => ({
+    ...row,
+    id: String(row.id),
+    storage_area_ids: row.storage_area_ids.map(String),
+  }));
+
+  console.log('API /api/locations GET locations:', JSON.stringify(locations, null, 2));
+  return NextResponse.json(locations, { headers: { 'Cache-Control': 'no-store' } });
 }
 
 export async function POST(request: NextRequest) {

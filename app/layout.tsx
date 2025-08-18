@@ -31,6 +31,9 @@ export default async function RootLayout({
   let storageAreas = [];
   let groups = [];
   let user = null;
+  let categories = [];
+  let subcategories = [];
+  let tags = [];
 
   if (userId) {
     const userResult = await db.query(`SELECT id, name, email FROM users WHERE id = $1`, [userId]);
@@ -81,6 +84,15 @@ export default async function RootLayout({
       [userId]
     );
     groups = locationsResult.rows;
+
+    const categoriesResult = await db.query(`SELECT * FROM categories WHERE user_id = $1 ORDER BY name`, [userId]);
+    categories = categoriesResult.rows;
+
+    const subcategoriesResult = await db.query(`SELECT * FROM subcategories WHERE user_id = $1 ORDER BY name`, [userId]);
+    subcategories = subcategoriesResult.rows;
+
+    const tagsResult = await db.query(`SELECT * FROM tags WHERE user_id = $1 ORDER BY name`, [userId]);
+    tags = tagsResult.rows;
   }
 
   return (
@@ -88,7 +100,7 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <StoreProvider initialData={{ itemsByStorageArea, storageAreas, locations: groups, user }}>
+        <StoreProvider initialData={{ itemsByStorageArea, storageAreas, locations: groups, user, categories, subcategories, tags }}>
           <Header />
           {children}
         </StoreProvider>

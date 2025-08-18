@@ -13,6 +13,9 @@ export interface Item {
   barcode: string | null;
   storage_area_id: string;
   location_id: string | null;
+  category_id?: string | null;
+  subcategory_id?: string | null;
+  tag_ids?: string[] | null;
 }
 
 export interface StorageArea {
@@ -30,4 +33,21 @@ export interface ItemsByStorageArea {
   [key: string]: {
     [key: string]: Item[];
   };
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  icon?: string;
+}
+
+export interface Subcategory {
+  id: string;
+  name: string;
+  category_id: string;
+}
+
+export interface Tag {
+  id: string;
+  name: string;
 }

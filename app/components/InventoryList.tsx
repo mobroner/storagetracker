@@ -3,14 +3,11 @@
 import { useState } from "react";
 import { useStore } from "./StoreProvider";
 import SelectLocationModal from "./SelectLocationModal";
-import { Item, ItemsByStorageArea } from "@/app/lib/definitions";
+import { Item, ItemsByStorageArea, Location } from "@/app/lib/definitions";
 import styles from "./InventoryList.module.css";
-
-import { Location } from "@/app/lib/definitions";
 
 import { RefObject } from "react";
 
-// An extra comment to force a re-save
 interface InventoryListProps {
   itemsByStorageArea: ItemsByStorageArea;
   handleEditItem: (item: Item) => void;
@@ -28,7 +25,7 @@ export default function InventoryList({
   setSelectedStorageArea,
   addItemFormRef,
 }: InventoryListProps) {
-  const { locations, refreshData } = useStore();
+  const { locations, categories, subcategories, refreshData } = useStore();
   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>(
     Object.keys(itemsByStorageArea).reduce((acc, key) => {
       acc[key] = true;
@@ -125,41 +122,46 @@ export default function InventoryList({
                 return (
                   <div key={locationName} className={styles.location}>
                     <h4 className={styles.locationTitle}>{locationName === 'null' ? 'Uncategorized' : locationName}</h4>
-                    <div className={styles.tableContainer}>
-                      <table className={styles.table}>
-                        <thead>
-                          <tr>
-                            <th>Item</th>
-                            <th>Quantity</th>
-                            <th>Added Date</th>
-                            <th>Expires</th>
-                            <th>Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {items.map((item: Item) => (
-                            <tr key={item.id}>
-                              <td className={styles.itemData}>{item.item_name}</td>
-                              <td className={styles.quantityData}>
-                                <div className={styles.quantityContainer}>
-                                  <button
-                                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                    className={styles.quantityButton}
-                                  >
-                                    -
-                                  </button>
-                                  <span className={styles.quantity}>{item.quantity}</span>
-                                  <button
-                                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                    className={styles.quantityButton}
-                                  >
-                                    +
-                                  </button>
-                                </div>
-                              </td>
-                              <td className={styles.addedDateData}>{new Date(item.date_added).toLocaleDateString()}</td>
-                              <td className={styles.expiresData}>{item.expiry_date ? new Date(item.expiry_date).toLocaleDateString() : "N/A"}</td>
-                              <td className={`${styles.actionsData} ${styles.actionsContainer}`}>
+                    <div className={styles.itemList}>
+                      <div className={`${styles.itemRow} ${styles.itemHeader}`}>
+                        <div className={styles.itemCell}>Item</div>
+                        <div className={styles.itemCell}>Category</div>
+                        <div className={styles.itemCell}>Subcategory</div>
+                        <div className={styles.itemCell}>Quantity</div>
+                        <div className={styles.itemCell}>Added</div>
+                        <div className={styles.itemCell}>Expires</div>
+                        <div className={styles.itemCell}>Actions</div>
+                      </div>
+                      {items.map((item: Item) => {
+                        const category = categories.find(c => c.id === item.category_id)?.name;
+                        const subcategory = subcategories.find(s => s.id === item.subcategory_id)?.name;
+
+                        return (
+                          <div key={item.id} className={styles.itemRow}>
+                            <div className={styles.itemCell} data-label="Item">{item.item_name}</div>
+                            <div className={styles.itemCell} data-label="Category">{category || "N/A"}</div>
+                            <div className={styles.itemCell} data-label="Subcategory">{subcategory || "N/A"}</div>
+                            <div className={styles.itemCell} data-label="Quantity">
+                              <div className={styles.quantityContainer}>
+                                <button
+                                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                  className={styles.quantityButton}
+                                >
+                                  -
+                                </button>
+                                <span className={styles.quantity}>{item.quantity}</span>
+                                <button
+                                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                  className={styles.quantityButton}
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </div>
+                            <div className={styles.itemCell} data-label="Added">{new Date(item.date_added).toLocaleDateString()}</div>
+                            <div className={styles.itemCell} data-label="Expires">{item.expiry_date ? new Date(item.expiry_date).toLocaleDateString() : "N/A"}</div>
+                            <div className={styles.itemCell} data-label="Actions">
+                              <div className={styles.actionsContainer}>
                                 <button
                                   onClick={() => handleEditItem(item)}
                                   className={styles.actionButton}
@@ -172,11 +174,11 @@ export default function InventoryList({
                                 >
                                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clipRule="evenodd" /></svg>
                                 </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 );

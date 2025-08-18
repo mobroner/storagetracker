@@ -1,28 +1,11 @@
 import { db } from '@/app/lib/db';
 import { NextResponse } from 'next/server';
 import { getUserId } from '@/app/lib/auth';
-
-interface ItemFromDB {
-  storage_area_name: string;
-  location_name: string | null;
-  id: number;
-  item_name: string;
-  quantity: number;
-  date_added: string;
-  expiry_date: string | null;
-}
-
-interface ItemData {
-    id: number;
-    item_name: string;
-    quantity: number;
-    date_added: string;
-    expiry_date: string | null;
-}
+import { Item } from '@/app/lib/definitions';
 
 interface ItemsByStorageArea {
   [storageAreaName: string]: {
-    [locationName: string]: ItemData[];
+    [locationName: string]: Item[];
   };
 }
 
@@ -43,7 +26,10 @@ export async function GET() {
       i.expiry_date,
       i.storage_area_id,
       i.location_id,
-      i.barcode
+      i.barcode,
+      i.category_id,
+      i.subcategory_id,
+      i.tag_ids
     FROM items i
     JOIN storage_areas sa ON i.storage_area_id = sa.id
     LEFT JOIN item_locations il ON i.location_id = il.id
@@ -59,7 +45,7 @@ export async function GET() {
     [userId]
   );
 
-  const itemsByStorageArea = result.rows.reduce((acc: ItemsByStorageArea, item: ItemFromDB) => {
+  const itemsByStorageArea = result.rows.reduce((acc: ItemsByStorageArea, item: any) => {
     const { storage_area_name, location_name, ...itemData } = item;
     if (!acc[storage_area_name]) {
       acc[storage_area_name] = {};
@@ -68,7 +54,10 @@ export async function GET() {
     if (!acc[storage_area_name][effectiveLocationName]) {
       acc[storage_area_name][effectiveLocationName] = [];
     }
-    acc[storage_area_name][effectiveLocationName].push(itemData);
+    acc[storage_area_name][effectiveLocationName].push({
+      ...itemData,
+      id: String(itemData.id),
+    });
     return acc;
   }, {} as ItemsByStorageArea);
 
@@ -84,8 +73,8 @@ export async function POST(request: Request) {
 
   const data = await request.json();
   await db.query(
-    `INSERT INTO items (item_name, quantity, date_added, expiry_date, barcode, location_id, user_id, storage_area_id)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+    `INSERT INTO items (item_name, quantity, date_added, expiry_date, barcode, location_id, user_id, storage_area_id, category_id, subcategory_id, tag_ids)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
     [
       data.itemName,
       data.quantity,
@@ -95,6 +84,9 @@ export async function POST(request: Request) {
       data.locationId || null,
       userId,
       data.storageAreaId,
+      data.categoryId || null,
+      data.subcategoryId || null,
+      data.tagIds || null,
     ]
   );
   return new Response(null, { status: 204 });
@@ -116,14 +108,17 @@ export async function PUT(request: Request) {
     barcode,
     storageAreaId,
     locationId,
+    categoryId,
+    subcategoryId,
+    tagIds,
   } = data;
 
   if (itemName) {
     // Full item update
     await db.query(
       `UPDATE items
-       SET item_name = $1, quantity = $2, date_added = $3, expiry_date = $4, barcode = $5, storage_area_id = $6, location_id = $7
-       WHERE id = $8 AND user_id = $9`,
+       SET item_name = $1, quantity = $2, date_added = $3, expiry_date = $4, barcode = $5, storage_area_id = $6, location_id = $7, category_id = $8, subcategory_id = $9, tag_ids = $10
+       WHERE id = $11 AND user_id = $12`,
       [
         itemName,
         quantity,
@@ -132,6 +127,9 @@ export async function PUT(request: Request) {
         barcode || null,
         storageAreaId,
         locationId || null,
+        categoryId || null,
+        subcategoryId || null,
+        tagIds || null,
         id,
         userId,
       ]

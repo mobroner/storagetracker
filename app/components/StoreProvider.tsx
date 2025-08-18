@@ -1,12 +1,15 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
-import { User, ItemsByStorageArea, StorageArea, Location } from "@/app/lib/definitions";
+import { User, ItemsByStorageArea, StorageArea, Location, Category, Subcategory, Tag } from "@/app/lib/definitions";
 
 interface StoreContextType {
   itemsByStorageArea: ItemsByStorageArea;
   storageAreas: StorageArea[];
   locations: Location[];
+  categories: Category[];
+  subcategories: Subcategory[];
+  tags: Tag[];
   loading: boolean;
   user: User | null;
   login: (user: User) => void;
@@ -34,11 +37,17 @@ export function StoreProvider({
     storageAreas: StorageArea[];
     locations: Location[];
     user: User | null;
+    categories: Category[];
+    subcategories: Subcategory[];
+    tags: Tag[];
   };
 }) {
   const [itemsByStorageArea, setItemsByStorageArea] = useState<ItemsByStorageArea>(initialData.itemsByStorageArea);
   const [storageAreas, setStorageAreas] = useState<StorageArea[]>(initialData.storageAreas);
   const [locations, setLocations] = useState<Location[]>(initialData.locations);
+  const [categories, setCategories] = useState<Category[]>(initialData.categories);
+  const [subcategories, setSubcategories] = useState<Subcategory[]>(initialData.subcategories);
+  const [tags, setTags] = useState<Tag[]>(initialData.tags);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(initialData.user);
 
@@ -58,21 +67,30 @@ export function StoreProvider({
 
   const refreshData = async () => {
     setLoading(true);
-    const [itemsRes, storageAreasRes, locationsRes] = await Promise.all([
+    const [itemsRes, storageAreasRes, locationsRes, categoriesRes, subcategoriesRes, tagsRes] = await Promise.all([
       fetch("/api/items"),
       fetch("/api/storage-areas"),
       fetch("/api/locations"),
+      fetch("/api/categories"),
+      fetch("/api/subcategories"),
+      fetch("/api/tags"),
     ]);
 
-    const [itemsData, storageAreasData, locationsData] = await Promise.all([
+    const [itemsData, storageAreasData, locationsData, categoriesData, subcategoriesData, tagsData] = await Promise.all([
       itemsRes.json(),
       storageAreasRes.json(),
       locationsRes.json(),
+      categoriesRes.json(),
+      subcategoriesRes.json(),
+      tagsRes.json(),
     ]);
 
     setItemsByStorageArea(itemsData);
     setStorageAreas(storageAreasData);
     setLocations(locationsData);
+    setCategories(categoriesData);
+    setSubcategories(subcategoriesData);
+    setTags(tagsData);
     setLoading(false);
   };
 
@@ -82,6 +100,9 @@ export function StoreProvider({
         itemsByStorageArea,
         storageAreas,
         locations,
+        categories,
+        subcategories,
+        tags,
         loading,
         user,
         login,

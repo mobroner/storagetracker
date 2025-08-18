@@ -3,6 +3,9 @@ DROP TABLE IF EXISTS items;
 DROP TABLE IF EXISTS storage_area_groups;
 DROP TABLE IF EXISTS item_groups;
 DROP TABLE IF EXISTS storage_areas;
+DROP TABLE IF EXISTS subcategories;
+DROP TABLE IF EXISTS categories;
+DROP TABLE IF EXISTS tags;
 DROP TABLE IF EXISTS users;
 
 -- Create Users Table
@@ -36,6 +39,29 @@ CREATE TABLE storage_area_groups (
     PRIMARY KEY (storage_area_id, group_id)
 );
 
+-- Create Categories Table
+CREATE TABLE categories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    icon VARCHAR(255),
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Create Subcategories Table
+CREATE TABLE subcategories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    category_id INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Create Tags Table
+CREATE TABLE tags (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE
+);
+
 -- Create Items Table
 CREATE TABLE items (
     id SERIAL PRIMARY KEY,
@@ -47,8 +73,15 @@ CREATE TABLE items (
     group_id INTEGER REFERENCES item_groups(id) ON DELETE SET NULL,
     original_group_id INTEGER REFERENCES item_groups(id) ON DELETE SET NULL,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    storage_area_id INTEGER NOT NULL REFERENCES storage_areas(id) ON DELETE CASCADE
+    storage_area_id INTEGER NOT NULL REFERENCES storage_areas(id) ON DELETE CASCADE,
+    category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
+    subcategory_id INTEGER REFERENCES subcategories(id) ON DELETE SET NULL,
+    tag_ids INTEGER[]
 );
+
+-- Create Indexes
+CREATE INDEX idx_items_category_id ON items(category_id);
+CREATE INDEX idx_items_subcategory_id ON items(subcategory_id);
 
 -- Insert Sample Data
 -- Replace with your actual user data.
@@ -89,11 +122,29 @@ BEGIN
     INSERT INTO storage_area_groups (storage_area_id, group_id) VALUES
     ((SELECT id FROM storage_areas WHERE name = 'Freezer' AND user_id = test_user_id), (SELECT id FROM item_groups WHERE group_name = 'Frozen Vegetables' AND user_id = test_user_id));
 
+    -- Insert Sample Categories
+    INSERT INTO categories (name, icon, user_id) VALUES
+    ('Food & Beverage', '🥫', test_user_id),
+    ('Household Supplies', '🧽', test_user_id),
+    ('Hygiene & Personal Care', '🧼', test_user_id);
+
+    -- Insert Sample Subcategories
+    INSERT INTO subcategories (name, category_id, user_id) VALUES
+    ('Pantry Staples', (SELECT id FROM categories WHERE name = 'Food & Beverage' AND user_id = test_user_id), test_user_id),
+    ('Cleaning Products', (SELECT id FROM categories WHERE name = 'Household Supplies' AND user_id = test_user_id), test_user_id),
+    ('Oral Care', (SELECT id FROM categories WHERE name = 'Hygiene & Personal Care' AND user_id = test_user_id), test_user_id);
+
+    -- Insert Sample Tags
+    INSERT INTO tags (name, user_id) VALUES
+    ('dry goods', test_user_id),
+    ('cleaning', test_user_id),
+    ('hygiene', test_user_id);
+
     -- Insert Sample Items
-    INSERT INTO items (item_name, quantity, storage_area_id, group_id, user_id, expiry_date) VALUES
-    ('Canned Tomatoes', 5, (SELECT id FROM storage_areas WHERE name = 'Pantry' AND user_id = test_user_id), (SELECT id FROM item_groups WHERE group_name = 'Canned Goods' AND user_id = test_user_id), test_user_id, '2025-12-31'),
-    ('Milk', 1, (SELECT id FROM storage_areas WHERE name = 'Fridge' AND user_id = test_user_id), (SELECT id FROM item_groups WHERE group_name = 'Dairy' AND user_id = test_user_id), test_user_id, '2024-08-20'),
-    ('Frozen Peas', 2, (SELECT id FROM storage_areas WHERE name = 'Freezer' AND user_id = test_user_id), (SELECT id FROM item_groups WHERE group_name = 'Frozen Vegetables' AND user_id = test_user_id), test_user_id, '2026-01-15');
+    INSERT INTO items (item_name, quantity, storage_area_id, group_id, user_id, expiry_date, category_id, subcategory_id, tag_ids) VALUES
+    ('Canned Tomatoes', 5, (SELECT id FROM storage_areas WHERE name = 'Pantry' AND user_id = test_user_id), (SELECT id FROM item_groups WHERE group_name = 'Canned Goods' AND user_id = test_user_id), test_user_id, '2025-12-31', (SELECT id FROM categories WHERE name = 'Food & Beverage' AND user_id = test_user_id), (SELECT id FROM subcategories WHERE name = 'Pantry Staples' AND user_id = test_user_id), ARRAY[(SELECT id FROM tags WHERE name = 'dry goods' AND user_id = test_user_id)]),
+    ('Milk', 1, (SELECT id FROM storage_areas WHERE name = 'Fridge' AND user_id = test_user_id), (SELECT id FROM item_groups WHERE group_name = 'Dairy' AND user_id = test_user_id), test_user_id, '2024-08-20', (SELECT id FROM categories WHERE name = 'Food & Beverage' AND user_id = test_user_id), (SELECT id FROM subcategories WHERE name = 'Pantry Staples' AND user_id = test_user_id), NULL),
+    ('Frozen Peas', 2, (SELECT id FROM storage_areas WHERE name = 'Freezer' AND user_id = test_user_id), (SELECT id FROM item_groups WHERE group_name = 'Frozen Vegetables' AND user_id = test_user_id), test_user_id, '2026-01-15', (SELECT id FROM categories WHERE name = 'Food & Beverage' AND user_id = test_user_id), (SELECT id FROM subcategories WHERE name = 'Pantry Staples' AND user_id = test_user_id), NULL);
 END $$;
 
 -- Verify insertion

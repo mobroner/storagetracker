@@ -9,9 +9,10 @@ const runMigration = async () => {
 
   try {
     await client.connect();
-    const sql = fs.readFileSync('migration.sql', 'utf8');
+    const migrationFile = process.argv[2] || 'migration.sql';
+    const sql = fs.readFileSync(migrationFile, 'utf8');
     await client.query(sql);
-    console.log('Migration completed successfully.');
+    console.log(`Migration from ${migrationFile} completed successfully.`);
   } catch (err) {
     console.error('Error running migration:', err);
   } finally {

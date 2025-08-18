@@ -3,9 +3,9 @@
 import { useState } from "react";
 import styles from "./Modal.module.css";
 
-interface Group {
+interface Location {
   id: string;
-  group_name: string;
+  location_name: string;
   storage_area_ids: string[];
 }
 
@@ -14,26 +14,26 @@ interface StorageArea {
   name: string;
 }
 
-interface EditGroupModalProps {
-  group: Group;
+interface EditLocationModalProps {
+  location: Location;
   storageAreas: StorageArea[];
   onClose: () => void;
-  onSave: (id: string, groupName: string, storageAreaIds: string[]) => void;
+  onSave: (id: string, locationName: string, storageAreaIds: string[]) => void;
 }
 
-export default function EditGroupModal({
-  group,
+export default function EditLocationModal({
+  location,
   storageAreas,
   onClose,
   onSave,
-}: EditGroupModalProps) {
-  const [groupName, setGroupName] = useState(group.group_name);
+}: EditLocationModalProps) {
+  const [locationName, setLocationName] = useState(location.location_name);
   const [selectedStorageAreaIds, setSelectedStorageAreaIds] = useState(
-    group.storage_area_ids.filter((id) => id !== null) || []
+    location.storage_area_ids.filter((id) => id !== null) || []
   );
 
   function handleSave() {
-    onSave(group.id, groupName, selectedStorageAreaIds);
+    onSave(location.id, locationName, selectedStorageAreaIds);
   }
 
   function handleCheckboxChange(storageAreaId: string) {
@@ -48,7 +48,7 @@ export default function EditGroupModal({
     <div className={styles.overlay}>
       <div className={styles.card}>
         <div className={styles.header}>
-          <h2 className={styles.title}>Edit Group</h2>
+          <h2 className={styles.title}>Edit Location</h2>
           <button onClick={onClose} className={styles.closeButton}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -58,8 +58,8 @@ export default function EditGroupModal({
         <div className={styles.content}>
           <input
             type="text"
-            value={groupName}
-            onChange={(e) => setGroupName(e.target.value)}
+            value={locationName}
+            onChange={(e) => setLocationName(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded-md"
           />
           <div className="mt-4">

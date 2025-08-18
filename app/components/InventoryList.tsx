@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { useStore } from "./StoreProvider";
-import SelectGroupModal from "./SelectGroupModal";
+import SelectLocationModal from "./SelectLocationModal";
 import { Item, ItemsByStorageArea } from "@/app/lib/definitions";
 import styles from "./InventoryList.module.css";
 
-import { Group } from "@/app/lib/definitions";
+import { Location } from "@/app/lib/definitions";
 
 import { RefObject } from "react";
 
@@ -14,8 +14,8 @@ import { RefObject } from "react";
 interface InventoryListProps {
   itemsByStorageArea: ItemsByStorageArea;
   handleEditItem: (item: Item) => void;
-  modalGroups: Group[];
-  setModalGroups: (groups: Group[]) => void;
+  modalLocations: Location[];
+  setModalLocations: (locations: Location[]) => void;
   setSelectedStorageArea: (id: string) => void;
   addItemFormRef: RefObject<HTMLDivElement | null>;
 }
@@ -23,12 +23,12 @@ interface InventoryListProps {
 export default function InventoryList({
   itemsByStorageArea,
   handleEditItem,
-  modalGroups,
-  setModalGroups,
+  modalLocations,
+  setModalLocations,
   setSelectedStorageArea,
   addItemFormRef,
 }: InventoryListProps) {
-  const { groups, refreshData } = useStore();
+  const { locations, refreshData } = useStore();
   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>(
     Object.keys(itemsByStorageArea).reduce((acc, key) => {
       acc[key] = true;
@@ -51,12 +51,12 @@ export default function InventoryList({
     if (item && item.quantity === 0 && newQuantity > 0) {
       setSelectedItemId(id);
       setSelectedStorageArea(item.storage_area_id);
-      const filtered = groups.filter(
-        (group) =>
-          group.storage_area_ids &&
-          group.storage_area_ids.includes(item.storage_area_id)
+      const filtered = locations.filter(
+        (location) =>
+          location.storage_area_ids &&
+          location.storage_area_ids.includes(item.storage_area_id)
       );
-      setModalGroups(filtered);
+      setModalLocations(filtered);
       setShowModal(true);
     } else if (newQuantity >= 0) {
       await fetch("/api/items", {
@@ -68,12 +68,12 @@ export default function InventoryList({
     }
   }
 
-  async function handleSelectGroup(groupId: string) {
+  async function handleSelectLocation(locationId: string) {
     if (selectedItemId) {
       await fetch("/api/items", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: selectedItemId, quantity: 1, groupId }),
+        body: JSON.stringify({ id: selectedItemId, quantity: 1, locationId }),
       });
       setShowModal(false);
       setSelectedItemId(null);
@@ -93,14 +93,14 @@ export default function InventoryList({
   return (
     <div className={styles.card}>
       {showModal && (
-        <SelectGroupModal
-          groups={modalGroups}
+        <SelectLocationModal
+          locations={modalLocations}
           onClose={() => setShowModal(false)}
-          onSelect={handleSelectGroup}
+          onSelect={handleSelectLocation}
         />
       )}
-      {Object.entries(itemsByStorageArea).map(([storageArea, groups]) => {
-        const hasItemsInStorageArea = Object.values(groups).some((items: Item[]) => items.length > 0);
+      {Object.entries(itemsByStorageArea).map(([storageArea, locations]) => {
+        const hasItemsInStorageArea = Object.values(locations).some((items: Item[]) => items.length > 0);
 
         if (!hasItemsInStorageArea) {
           return null;
@@ -118,13 +118,13 @@ export default function InventoryList({
               {storageArea}
             </h3>
             {openSections[storageArea] &&
-              Object.entries(groups).map(([groupName, items]) => {
+              Object.entries(locations).map(([locationName, items]) => {
                 if (!Array.isArray(items) || items.length === 0) {
                   return null;
                 }
                 return (
-                  <div key={groupName} className={styles.group}>
-                    <h4 className={styles.groupTitle}>{groupName === 'null' ? 'Uncategorized' : groupName}</h4>
+                  <div key={locationName} className={styles.location}>
+                    <h4 className={styles.locationTitle}>{locationName === 'null' ? 'Uncategorized' : locationName}</h4>
                     <div className={styles.tableContainer}>
                       <table className={styles.table}>
                         <thead>

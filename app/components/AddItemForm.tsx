@@ -4,13 +4,13 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, forwardRef } from "react";
 import { useStore } from "./StoreProvider";
 import styles from "./AddItemForm.module.css";
-import { Item, Group } from "@/app/lib/definitions";
+import { Item, Location } from "@/app/lib/definitions";
 
 // An extra comment to force a re-save
 interface AddItemFormProps {
   editingItem: Item | null;
   setEditingItem: (item: Item | null) => void;
-  filteredGroups: Group[];
+  filteredLocations: Location[];
   selectedStorageArea: string;
   setSelectedStorageArea: (id: string) => void;
 }
@@ -20,7 +20,7 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
     {
       editingItem,
       setEditingItem,
-      filteredGroups,
+      filteredLocations,
       selectedStorageArea,
       setSelectedStorageArea,
     },
@@ -35,14 +35,14 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
       expiryDate: "",
       barcode: "",
       storageAreaId: "",
-      groupId: "",
+      locationId: "",
     });
 
     useEffect(() => {
       if (editingItem) {
-        const isValidGroup =
-          editingItem.group_id &&
-          filteredGroups.some((group) => group.id === editingItem.group_id);
+        const isValidLocation =
+          editingItem.location_id &&
+          filteredLocations.some((location) => location.id === editingItem.location_id);
 
         setFormData({
           itemName: editingItem.item_name,
@@ -55,10 +55,10 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
             : "",
           barcode: editingItem.barcode || "",
           storageAreaId: editingItem.storage_area_id,
-          groupId: isValidGroup ? editingItem.group_id || "" : "",
+          locationId: isValidLocation ? editingItem.location_id || "" : "",
         });
       }
-    }, [editingItem, filteredGroups]);
+    }, [editingItem, filteredLocations]);
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
       event.preventDefault();
@@ -81,7 +81,7 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
         expiryDate: "",
         barcode: "",
       storageAreaId: "",
-      groupId: "",
+      locationId: "",
     });
     setSelectedStorageArea("");
     router.refresh();
@@ -200,21 +200,21 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
             </select>
           </div>
           <div>
-            <label htmlFor="groupId" className={styles.label}>
-              Group (Optional)
+            <label htmlFor="locationId" className={styles.label}>
+              Location (Optional)
             </label>
             <select
-              id="groupId"
-              name="groupId"
+              id="locationId"
+              name="locationId"
               className={styles.select}
               disabled={!selectedStorageArea}
-              value={formData.groupId}
+              value={formData.locationId}
               onChange={handleChange}
             >
-              <option value="">Select a group</option>
-              {filteredGroups.map((group) => (
-                <option key={group.id} value={group.id}>
-                  {group.group_name}
+              <option value="">Select a location</option>
+              {filteredLocations.map((location) => (
+                <option key={location.id} value={location.id}>
+                  {location.location_name}
                 </option>
               ))}
             </select>

@@ -3,24 +3,24 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import AddItemForm from "./components/AddItemForm";
 import InventoryList from "./components/InventoryList";
-import ManageGroups from "./components/ManageGroups";
+import ManageLocations from "./components/ManageLocations";
 import ManageStorageAreas from "./components/ManageStorageAreas";
 import { useStore } from "./components/StoreProvider";
 import styles from "./page.module.css";
-import { Item, Group } from "./lib/definitions";
+import { Item, Location } from "./lib/definitions";
 
 // An extra comment to force a re-save
 export default function Home() {
-  const { itemsByStorageArea, groups } = useStore();
+  const { itemsByStorageArea, locations } = useStore();
   const [editingItem, setEditingItem] = useState<Item | null>(null);
   const [selectedStorageArea, setSelectedStorageArea] = useState<string>('');
-  const [modalGroups, setModalGroups] = useState<Group[]>([]);
-  const [filteredGroups, setFilteredGroups] = useState<Group[]>([]);
+  const [modalLocations, setModalLocations] = useState<Location[]>([]);
+  const [filteredLocations, setFilteredLocations] = useState<Location[]>([]);
   const addItemFormRef = useRef<HTMLDivElement>(null);
 
-  const notInStorageGroup = useMemo(
-    () => groups.find((group) => group.group_name === "Not in Storage"),
-    [groups]
+  const notInStorageLocation = useMemo(
+    () => locations.find((location) => location.location_name === "Not in Storage"),
+    [locations]
   );
 
   useEffect(() => {
@@ -29,29 +29,29 @@ export default function Home() {
     }
 
     if (!selectedStorageArea) {
-      setFilteredGroups(groups.filter((group) => group.group_name !== "Not in Storage"));
+      setFilteredLocations(locations.filter((location) => location.location_name !== "Not in Storage"));
     } else {
-      setFilteredGroups(
-        groups.filter(
-          (group) =>
-            group.group_name !== "Not in Storage" &&
-            Array.isArray(group.storage_area_ids) &&
-            group.storage_area_ids.map(String).includes(selectedStorageArea)
+      setFilteredLocations(
+        locations.filter(
+          (location) =>
+            location.location_name !== "Not in Storage" &&
+            Array.isArray(location.storage_area_ids) &&
+            location.storage_area_ids.map(String).includes(selectedStorageArea)
         )
       );
     }
-  }, [selectedStorageArea, groups, editingItem]);
+  }, [selectedStorageArea, locations, editingItem]);
 
   function handleEditItem(item: Item) {
     const storageAreaId = item.storage_area_id;
     setSelectedStorageArea(storageAreaId);
-    setFilteredGroups(
-      groups.filter((group) => {
-        const isCorrectGroup =
-          group.storage_area_ids &&
-          Array.isArray(group.storage_area_ids) &&
-          group.storage_area_ids.map(String).includes(storageAreaId);
-        return group.group_name !== "Not in Storage" && isCorrectGroup;
+    setFilteredLocations(
+      locations.filter((location) => {
+        const isCorrectLocation =
+          location.storage_area_ids &&
+          Array.isArray(location.storage_area_ids) &&
+          location.storage_area_ids.map(String).includes(storageAreaId);
+        return location.location_name !== "Not in Storage" && isCorrectLocation;
       })
     );
     setEditingItem(item);
@@ -65,7 +65,7 @@ export default function Home() {
           <AddItemForm
             editingItem={editingItem}
             setEditingItem={setEditingItem}
-            filteredGroups={filteredGroups}
+            filteredLocations={filteredLocations}
             selectedStorageArea={selectedStorageArea}
             setSelectedStorageArea={setSelectedStorageArea}
             ref={addItemFormRef}
@@ -73,15 +73,15 @@ export default function Home() {
           <InventoryList
             itemsByStorageArea={itemsByStorageArea}
             handleEditItem={handleEditItem}
-            modalGroups={modalGroups}
-            setModalGroups={setModalGroups}
+            modalLocations={modalLocations}
+            setModalLocations={setModalLocations}
             setSelectedStorageArea={setSelectedStorageArea}
             addItemFormRef={addItemFormRef}
           />
         </div>
         <div>
           <ManageStorageAreas />
-          <ManageGroups />
+          <ManageLocations />
         </div>
       </div>
     </main>

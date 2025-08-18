@@ -4,7 +4,7 @@ import { getUserId } from '@/app/lib/auth';
 
 interface ItemFromDB {
   storage_area_name: string;
-  group_name: string | null;
+  location_name: string | null;
   id: number;
   item_name: string;
   quantity: number;
@@ -22,7 +22,7 @@ interface ItemData {
 
 interface ItemsByStorageArea {
   [storageAreaName: string]: {
-    [groupName: string]: ItemData[];
+    [locationName: string]: ItemData[];
   };
 }
 
@@ -35,40 +35,40 @@ export async function GET() {
   const result = await db.query(
     `SELECT
       sa.name as storage_area_name,
-      ig.group_name,
+      il.location_name,
       i.id,
       i.item_name,
       i.quantity,
       i.date_added,
       i.expiry_date,
       i.storage_area_id,
-      i.group_id,
+      i.location_id,
       i.barcode
     FROM items i
     JOIN storage_areas sa ON i.storage_area_id = sa.id
-    LEFT JOIN item_groups ig ON i.group_id = ig.id
+    LEFT JOIN item_locations il ON i.location_id = il.id
     WHERE i.user_id = $1
     ORDER BY
       sa.name,
       CASE
-        WHEN ig.group_name = 'Not in Storage' THEN 1
+        WHEN il.location_name = 'Not in Storage' THEN 1
         ELSE 0
       END,
-      ig.group_name,
+      il.location_name,
       i.item_name`,
     [userId]
   );
 
   const itemsByStorageArea = result.rows.reduce((acc: ItemsByStorageArea, item: ItemFromDB) => {
-    const { storage_area_name, group_name, ...itemData } = item;
+    const { storage_area_name, location_name, ...itemData } = item;
     if (!acc[storage_area_name]) {
       acc[storage_area_name] = {};
     }
-    const effectiveGroupName = group_name || 'Ungrouped';
-    if (!acc[storage_area_name][effectiveGroupName]) {
-      acc[storage_area_name][effectiveGroupName] = [];
+    const effectiveLocationName = location_name || 'Uncategorized';
+    if (!acc[storage_area_name][effectiveLocationName]) {
+      acc[storage_area_name][effectiveLocationName] = [];
     }
-    acc[storage_area_name][effectiveGroupName].push(itemData);
+    acc[storage_area_name][effectiveLocationName].push(itemData);
     return acc;
   }, {} as ItemsByStorageArea);
 
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
 
   const data = await request.json();
   await db.query(
-    `INSERT INTO items (item_name, quantity, date_added, expiry_date, barcode, group_id, user_id, storage_area_id)
+    `INSERT INTO items (item_name, quantity, date_added, expiry_date, barcode, location_id, user_id, storage_area_id)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
     [
       data.itemName,
@@ -92,7 +92,7 @@ export async function POST(request: Request) {
       data.dateAdded,
       data.expiryDate || null,
       data.barcode || null,
-      data.groupId || null,
+      data.locationId || null,
       userId,
       data.storageAreaId,
     ]
@@ -115,14 +115,14 @@ export async function PUT(request: Request) {
     expiryDate,
     barcode,
     storageAreaId,
-    groupId,
+    locationId,
   } = data;
 
   if (itemName) {
     // Full item update
     await db.query(
       `UPDATE items
-       SET item_name = $1, quantity = $2, date_added = $3, expiry_date = $4, barcode = $5, storage_area_id = $6, group_id = $7
+       SET item_name = $1, quantity = $2, date_added = $3, expiry_date = $4, barcode = $5, storage_area_id = $6, location_id = $7
        WHERE id = $8 AND user_id = $9`,
       [
         itemName,
@@ -131,47 +131,47 @@ export async function PUT(request: Request) {
         expiryDate || null,
         barcode || null,
         storageAreaId,
-        groupId || null,
+        locationId || null,
         id,
         userId,
       ]
     );
   } else {
     // Quantity-only update
-    const currentItem = await db.query(`SELECT group_id, original_group_id FROM items WHERE id = $1`, [id]);
-    const { group_id: currentGroupId, original_group_id: originalGroupId } = currentItem.rows[0];
+    const currentItem = await db.query(`SELECT location_id, original_location_id FROM items WHERE id = $1`, [id]);
+    const { location_id: currentLocationId, original_location_id: originalLocationId } = currentItem.rows[0];
 
     if (quantity === 0) {
-      const notInStorageGroup = await db.query(
-        `SELECT id FROM item_groups WHERE group_name = 'Not in Storage' AND user_id = $1`,
+      const notInStorageLocation = await db.query(
+        `SELECT id FROM item_locations WHERE location_name = 'Not in Storage' AND user_id = $1`,
         [userId]
       );
 
-      let notInStorageGroupId;
-      if (notInStorageGroup.rows.length === 0) {
-        const newGroup = await db.query(
-          `INSERT INTO item_groups (group_name, user_id) VALUES ('Not in Storage', $1) RETURNING id`,
+      let notInStorageLocationId;
+      if (notInStorageLocation.rows.length === 0) {
+        const newLocation = await db.query(
+          `INSERT INTO item_locations (location_name, user_id) VALUES ('Not in Storage', $1) RETURNING id`,
           [userId]
         );
-        notInStorageGroupId = newGroup.rows[0].id;
+        notInStorageLocationId = newLocation.rows[0].id;
       } else {
-        notInStorageGroupId = notInStorageGroup.rows[0].id;
+        notInStorageLocationId = notInStorageLocation.rows[0].id;
       }
 
       await db.query(
-        `UPDATE items SET quantity = 0, group_id = $1, original_group_id = $2 WHERE id = $3`,
-        [notInStorageGroupId, currentGroupId, id]
+        `UPDATE items SET quantity = 0, location_id = $1, original_location_id = $2 WHERE id = $3`,
+        [notInStorageLocationId, currentLocationId, id]
       );
     } else {
-      if (groupId) {
+      if (locationId) {
         await db.query(
-          `UPDATE items SET quantity = $1, group_id = $2, original_group_id = NULL WHERE id = $3`,
-          [quantity, groupId, id]
+          `UPDATE items SET quantity = $1, location_id = $2, original_location_id = NULL WHERE id = $3`,
+          [quantity, locationId, id]
         );
-      } else if (originalGroupId) {
+      } else if (originalLocationId) {
         await db.query(
-          `UPDATE items SET quantity = $1, group_id = $2, original_group_id = NULL WHERE id = $3`,
-          [quantity, originalGroupId, id]
+          `UPDATE items SET quantity = $1, location_id = $2, original_location_id = NULL WHERE id = $3`,
+          [quantity, originalLocationId, id]
         );
       } else {
         await db.query(`UPDATE items SET quantity = $1 WHERE id = $2`, [

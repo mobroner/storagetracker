@@ -31,11 +31,11 @@
   transform: rotate(90deg);
 }
 
-.group {
+.location {
   margin-bottom: 1.5rem;
 }
 
-.groupTitle {
+.locationTitle {
   font-size: 1.125rem;
   font-weight: 700;
   margin-bottom: 1rem;

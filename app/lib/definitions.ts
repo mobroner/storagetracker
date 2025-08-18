@@ -12,7 +12,7 @@ export interface Item {
   expiry_date: string | null;
   barcode: string | null;
   storage_area_id: string;
-  group_id: string | null;
+  location_id: string | null;
 }
 
 export interface StorageArea {
@@ -20,9 +20,9 @@ export interface StorageArea {
   name: string;
 }
 
-export interface Group {
+export interface Location {
   id: string;
-  group_name: string;
+  location_name: string;
   storage_area_ids: string[];
 }
 

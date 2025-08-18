@@ -38,7 +38,7 @@ export default async function RootLayout({
     const itemsResult = await db.query(
       `SELECT
         sa.name as storage_area_name,
-        ig.group_name,
+        il.location_name,
         i.id,
         i.item_name,
         i.quantity,
@@ -46,41 +46,41 @@ export default async function RootLayout({
         i.expiry_date
       FROM items i
       JOIN storage_areas sa ON i.storage_area_id = sa.id
-      LEFT JOIN item_groups ig ON i.group_id = ig.id
+      LEFT JOIN item_locations il ON i.location_id = il.id
       WHERE i.user_id = $1
-      ORDER BY sa.name, ig.group_name, i.item_name`,
+      ORDER BY sa.name, il.location_name, i.item_name`,
       [userId]
     );
 
     itemsByStorageArea = itemsResult.rows.reduce((acc, item) => {
-      const { storage_area_name, group_name, ...itemData } = item;
-      const effectiveGroupName = group_name || 'Ungrouped';
+      const { storage_area_name, location_name, ...itemData } = item;
+      const effectiveLocationName = location_name || 'Uncategorized';
       if (!acc[storage_area_name]) {
         acc[storage_area_name] = {};
       }
-      if (!acc[storage_area_name][effectiveGroupName]) {
-        acc[storage_area_name][effectiveGroupName] = [];
+      if (!acc[storage_area_name][effectiveLocationName]) {
+        acc[storage_area_name][effectiveLocationName] = [];
       }
-      acc[storage_area_name][effectiveGroupName].push(itemData);
+      acc[storage_area_name][effectiveLocationName].push(itemData);
       return acc;
     }, {});
 
     const storageAreasResult = await db.query(`SELECT * FROM storage_areas WHERE user_id = $1 ORDER BY name`, [userId]);
     storageAreas = storageAreasResult.rows;
 
-    const groupsResult = await db.query(
+    const locationsResult = await db.query(
       `SELECT
-        ig.id,
-        ig.group_name,
-        array_agg(sag.storage_area_id) as storage_area_ids
-      FROM item_groups ig
-      LEFT JOIN storage_area_groups sag ON ig.id = sag.group_id
-      WHERE ig.user_id = $1
-      GROUP BY ig.id, ig.group_name
-      ORDER BY ig.group_name`,
+        il.id,
+        il.location_name,
+        array_agg(sal.storage_area_id) as storage_area_ids
+      FROM item_locations il
+      LEFT JOIN storage_area_locations sal ON il.id = sal.location_id
+      WHERE il.user_id = $1
+      GROUP BY il.id, il.location_name
+      ORDER BY il.location_name`,
       [userId]
     );
-    groups = groupsResult.rows;
+    groups = locationsResult.rows;
   }
 
   return (
@@ -88,7 +88,7 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <StoreProvider initialData={{ itemsByStorageArea, storageAreas, groups, user }}>
+        <StoreProvider initialData={{ itemsByStorageArea, storageAreas, locations: groups, user }}>
           <Header />
           {children}
         </StoreProvider>

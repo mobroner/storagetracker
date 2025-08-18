@@ -1,12 +1,12 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
-import { User, ItemsByStorageArea, StorageArea, Group } from "@/app/lib/definitions";
+import { User, ItemsByStorageArea, StorageArea, Location } from "@/app/lib/definitions";
 
 interface StoreContextType {
   itemsByStorageArea: ItemsByStorageArea;
   storageAreas: StorageArea[];
-  groups: Group[];
+  locations: Location[];
   loading: boolean;
   user: User | null;
   login: (user: User) => void;
@@ -32,13 +32,13 @@ export function StoreProvider({
   initialData: {
     itemsByStorageArea: ItemsByStorageArea;
     storageAreas: StorageArea[];
-    groups: Group[];
+    locations: Location[];
     user: User | null;
   };
 }) {
   const [itemsByStorageArea, setItemsByStorageArea] = useState<ItemsByStorageArea>(initialData.itemsByStorageArea);
   const [storageAreas, setStorageAreas] = useState<StorageArea[]>(initialData.storageAreas);
-  const [groups, setGroups] = useState<Group[]>(initialData.groups);
+  const [locations, setLocations] = useState<Location[]>(initialData.locations);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(initialData.user);
 
@@ -58,21 +58,21 @@ export function StoreProvider({
 
   const refreshData = async () => {
     setLoading(true);
-    const [itemsRes, storageAreasRes, groupsRes] = await Promise.all([
+    const [itemsRes, storageAreasRes, locationsRes] = await Promise.all([
       fetch("/api/items"),
       fetch("/api/storage-areas"),
-      fetch("/api/groups"),
+      fetch("/api/locations"),
     ]);
 
-    const [itemsData, storageAreasData, groupsData] = await Promise.all([
+    const [itemsData, storageAreasData, locationsData] = await Promise.all([
       itemsRes.json(),
       storageAreasRes.json(),
-      groupsRes.json(),
+      locationsRes.json(),
     ]);
 
     setItemsByStorageArea(itemsData);
     setStorageAreas(storageAreasData);
-    setGroups(groupsData);
+    setLocations(locationsData);
     setLoading(false);
   };
 
@@ -81,7 +81,7 @@ export function StoreProvider({
       value={{
         itemsByStorageArea,
         storageAreas,
-        groups,
+        locations,
         loading,
         user,
         login,

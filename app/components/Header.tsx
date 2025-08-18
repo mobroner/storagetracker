@@ -53,8 +53,8 @@ export default function Header() {
                   <Link href="/manage/storage-areas">
                     Storage Areas
                   </Link>
-                  <Link href="/manage/groups">
-                    Groups
+                  <Link href="/manage/locations">
+                    Locations
                   </Link>
                 </div>
               )}
@@ -81,8 +81,8 @@ export default function Header() {
           <Link href="/manage/storage-areas">
             Storage Areas
           </Link>
-          <Link href="/manage/groups">
-            Groups
+          <Link href="/manage/locations">
+            Locations
           </Link>
           <button
             onClick={handleLogout}

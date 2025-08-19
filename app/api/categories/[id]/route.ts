@@ -1,11 +1,16 @@
 import { NextResponse } from 'next/server';
-import { type NextRequest } from 'next/server';
 import { db } from '@/app/lib/db';
 import { getUserId } from '@/app/lib/auth';
 
+type Props = {
+  params: {
+    id: string
+  }
+};
+
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  props: Props
 ) {
   const userId = await getUserId();
   if (!userId) {
@@ -19,13 +24,13 @@ export async function DELETE(
     // Delete any subcategories first (will cascade to items)
     await db.query(
       'DELETE FROM subcategories WHERE category_id = $1 AND EXISTS (SELECT 1 FROM categories WHERE id = $1 AND user_id = $2)',
-      [params.id, userId]
+      [props.params.id, userId]
     );
 
     // Then delete the category itself
     const result = await db.query(
       'DELETE FROM categories WHERE id = $1 AND user_id = $2 RETURNING *',
-      [params.id, userId]
+      [props.params.id, userId]
     );
 
     await db.query('COMMIT');
@@ -43,8 +48,8 @@ export async function DELETE(
 }
 
 export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  props: Props
 ) {
   const userId = await getUserId();
   if (!userId) {
@@ -59,7 +64,7 @@ export async function PUT(
   try {
     const result = await db.query(
       'UPDATE categories SET name = $1 WHERE id = $2 AND user_id = $3 RETURNING *',
-      [name, params.id, userId]
+      [name, props.params.id, userId]
     );
 
     if (result.rowCount === 0) {

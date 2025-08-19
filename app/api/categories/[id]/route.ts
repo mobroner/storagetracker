@@ -5,7 +5,7 @@ import { getUserId } from '@/app/lib/auth';
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   const userId = await getUserId();
   if (!userId) {
@@ -19,13 +19,13 @@ export async function DELETE(
     // Delete any subcategories first (will cascade to items)
     await db.query(
       'DELETE FROM subcategories WHERE category_id = $1 AND EXISTS (SELECT 1 FROM categories WHERE id = $1 AND user_id = $2)',
-      [context.params.id, userId]
+      [params.id, userId]
     );
 
     // Then delete the category itself
     const result = await db.query(
       'DELETE FROM categories WHERE id = $1 AND user_id = $2 RETURNING *',
-      [context.params.id, userId]
+      [params.id, userId]
     );
 
     await db.query('COMMIT');
@@ -44,7 +44,7 @@ export async function DELETE(
 
 export async function PUT(
   req: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   const userId = await getUserId();
   if (!userId) {
@@ -59,7 +59,7 @@ export async function PUT(
   try {
     const result = await db.query(
       'UPDATE categories SET name = $1 WHERE id = $2 AND user_id = $3 RETURNING *',
-      [name, context.params.id, userId]
+      [name, params.id, userId]
     );
 
     if (result.rowCount === 0) {

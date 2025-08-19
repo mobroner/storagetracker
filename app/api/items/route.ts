@@ -63,6 +63,10 @@ export async function GET() {
     acc[storage_area_name][effectiveLocationName].push({
       ...itemData,
       id: String(itemData.id),
+      storage_area_id: String(itemData.storage_area_id),
+      location_id: itemData.location_id ? String(itemData.location_id) : null,
+      category_id: itemData.category_id ? String(itemData.category_id) : null,
+      subcategory_id: itemData.subcategory_id ? String(itemData.subcategory_id) : null,
     });
     return acc;
   }, {} as ItemsByStorageArea);

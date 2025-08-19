@@ -46,16 +46,26 @@ export default function CategoryView() {
   };
 
   const getLocationName = (item: Item) => {
-    const storageArea = storageAreas.find(sa => sa.id === item.storage_area_id);
+    // Ensure IDs are strings for comparison
+    const storageAreaId = String(item.storage_area_id);
+    const locationId = item.location_id ? String(item.location_id) : null;
+
+    console.log('Looking for storage area:', {
+      searchId: storageAreaId,
+      availableIds: storageAreas.map(sa => sa.id),
+      type: typeof storageAreaId
+    });
+
+    const storageArea = storageAreas.find(sa => String(sa.id) === storageAreaId);
     if (!storageArea) {
-      console.log('Storage area not found for ID:', item.storage_area_id);
+      console.log('Storage area not found for ID:', storageAreaId);
       console.log('Available storage areas:', storageAreas);
       return 'Unknown Storage';
     }
     
-    const location = item.location_id ? locations.find(l => l.id === item.location_id) : null;
-    if (item.location_id && !location) {
-      console.log('Location not found for ID:', item.location_id);
+    const location = locationId ? locations.find(l => String(l.id) === locationId) : null;
+    if (locationId && !location) {
+      console.log('Location not found for ID:', locationId);
       console.log('Available locations:', locations);
     }
 

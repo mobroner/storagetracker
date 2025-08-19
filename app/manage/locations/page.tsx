@@ -1,13 +1,18 @@
+'use client';
+
 import ManageLocations from "@/app/components/ManageLocations";
 import Link from "next/link";
-import styles from "@/app/components/Button.module.css";
+import buttonStyles from "@/app/components/Button.module.css";
+import styles from "./page.module.css";
 
 export default function ManageLocationsPage() {
   return (
-    <div>
-      <ManageLocations />
+    <div className={styles.container}>
+      <div className={styles.managePage}>
+        <ManageLocations />
+      </div>
       <div className="mt-4 text-center">
-        <Link href="/" className={styles.button}>
+        <Link href="/" className={buttonStyles.button}>
           Home
         </Link>
       </div>

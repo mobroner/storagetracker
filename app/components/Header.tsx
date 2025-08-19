@@ -97,6 +97,12 @@ export default function Header() {
             <Link href="/manage/locations" onClick={toggleMenu} className={styles.subLink}>
               Locations
             </Link>
+            <Link href="/manage/categories" onClick={toggleMenu} className={styles.subLink}>
+              Categories
+            </Link>
+            <Link href="/manage/subcategories" onClick={toggleMenu} className={styles.subLink}>
+              Subcategories
+            </Link>
           </div>
           <button onClick={handlePopulateTaxonomy} className={styles.logoutButton}>
             Populate Taxonomy

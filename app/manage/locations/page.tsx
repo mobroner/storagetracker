@@ -8,9 +8,7 @@ import styles from "./page.module.css";
 export default function ManageLocationsPage() {
   return (
     <div className={styles.container}>
-      <div className={styles.managePage}>
-        <ManageLocations />
-      </div>
+      <ManageLocations />
       <div className="mt-4 text-center">
         <Link href="/" className={buttonStyles.button}>
           Home

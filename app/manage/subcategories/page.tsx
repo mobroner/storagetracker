@@ -49,14 +49,14 @@ export default function ManageSubcategoriesPage() {
     const newName = prompt('Enter new name:', subcategory.name)
     if (!newName || newName === subcategory.name) return
 
-    const response = await fetch(`/api/subcategories/${subcategory.id}`, {
+    const response = await fetch('/api/subcategories', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        id: subcategory.id,
         name: newName.trim(),
-        category_id: subcategory.category_id
       }),
     })
 
@@ -68,8 +68,12 @@ export default function ManageSubcategoriesPage() {
   const handleDelete = async (subcategory: Subcategory) => {
     if (!confirm('Are you sure you want to delete this subcategory?')) return
 
-    const response = await fetch(`/api/subcategories/${subcategory.id}`, {
+    const response = await fetch('/api/subcategories', {
       method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: subcategory.id }),
     })
 
     if (response.ok) {

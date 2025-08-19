@@ -1,0 +1,88 @@
+.container {
+  background-color: rgb(var(--card-background));
+  border-radius: 8px;
+  padding: 24px;
+  border: 1px solid rgb(var(--card-border));
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.addForm {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.input {
+  flex-grow: 1;
+  background-color: #f3f0ec;
+  border: 1px solid #e5e1da;
+  padding: 10px 12px;
+  border-radius: 4px;
+  color: #374151;
+}
+
+.addButton {
+  background-color: #374151;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+.list {
+  margin-top: 1rem;
+}
+
+.listItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f3f0ec;
+}
+
+.listItemName {
+  color: #333;
+}
+
+.editButton {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: white;
+  background-color: #374151;
+}
+
+.editButton:hover {
+  background-color: #4b5563;
+}
+
+.checkboxContainer {
+  margin-bottom: 1rem;
+}
+
+.checkboxContainer p {
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.checkboxLabel {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 1rem;
+  color: #374151;
+}
+
+.checkboxLabel input {
+  margin-right: 0.5rem;
+}

@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useStore } from "../../components/StoreProvider";
 import styles from "./page.module.css";
+import inventoryStyles from "../../components/InventoryList.module.css";
 import { Item } from "../../lib/definitions";
 
 export default function CategoryView() {
@@ -209,9 +210,12 @@ export default function CategoryView() {
             return (
               <div key={categoryId} className={styles.categorySection}>
                 <h3
-                  className={`${styles.categoryHeader} ${openSections[categoryId] ? styles.open : ''}`}
+                  className={`${inventoryStyles.storageAreaHeader} ${openSections[categoryId] ? inventoryStyles.open : ''}`}
                   onClick={() => toggleSection(categoryId)}
                 >
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
                   {categoryName}
                 </h3>
                 {openSections[categoryId] && (

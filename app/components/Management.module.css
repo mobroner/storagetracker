@@ -1,5 +1,7 @@
 .container {
   padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .title {
@@ -8,92 +10,10 @@
   font-size: 24px;
 }
 
-.list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  border: 1px solid rgb(var(--card-border));
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.listItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-  border-bottom: 1px solid rgb(var(--card-border));
-  background-color: rgb(var(--card-background));
-}
-
-.listItem:last-child {
-  border-bottom: none;
-}
-
-.listItemName {
-  color: rgb(var(--foreground));
-  font-size: 16px;
-}
-
-.buttonContainer {
-  display: flex;
-  gap: 8px;
-}
-
-.button {
-  padding: 6px 12px;
-  border-radius: 4px;
-  border: none;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.editButton {
-  padding: 6px 12px;
-  border-radius: 4px;
-  border: none;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  background-color: rgb(var(--primary));
-  color: white;
-}
-
-.deleteButton {
-  padding: 6px 12px;
-  border-radius: 4px;
-  border: none;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  background-color: #ff5722; /* Vibrant orange color */
-  color: white; /* Ensure text is visible */
-  color: white;
-}
-
-.addButton {
-  padding: 6px 12px;
-  border-radius: 4px;
-  border: none;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  background-color: rgb(var(--primary));
-  color: white;
-}
-
 .addForm {
-  margin: 0 auto 20px;
-  max-width: 50%;
-  width: 100%;
-}
-
-.addFormContainer {
+  margin-bottom: 20px;
   display: flex;
   gap: 8px;
-  align-items: center;
-  justify-content: center;
 }
 
 .input {
@@ -102,30 +22,98 @@
   border-radius: 4px;
   background-color: white;
   color: #333;
-  margin-right: 8px;
-  width: 100%;
-  max-width: 300px;
+  flex-grow: 1;
 }
 
-/* Style for select elements */
-select.input {
-  background-color: white;
-  color: #333;
+.addButton {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+  background-color: rgb(var(--primary));
+  color: white;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-@media (max-width: 640px) {
-  .addForm {
-    flex-direction: column;
-    gap: 8px;
-  }
+.addButton:hover {
+  background-color: rgb(55 65 81);
+}
 
-  .input {
-    width: 100%;
-    margin-right: 0;
-  }
+.list {
+  display: grid;
+  gap: 1rem;
+}
 
-  .addButton {
-    width: 100%;
-  }
+.card {
+  background-color: rgb(var(--card-background));
+  color: rgb(var(--foreground));
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  border: 1px solid rgb(var(--card-border));
+}
+
+.categoryTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.itemList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.listItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgb(var(--card-border));
+}
+
+.listItem:last-child {
+  border-bottom: none;
+}
+
+.listItemName {
+  font-size: 16px;
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 8px;
+}
+
+.editButton, .deleteButton {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: white;
+}
+
+.editButton {
+  background-color: rgb(var(--primary));
+}
+
+.deleteButton {
+  background-color: #ff5722;
+}
+
+.checkboxContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
 }

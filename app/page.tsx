@@ -6,6 +6,7 @@ import InventoryList from "./components/InventoryList";
 import ManageLocations from "./components/ManageLocations";
 import ManageStorageAreas from "./components/ManageStorageAreas";
 import EditItemModal from "./components/EditItemModal";
+import WelcomeModal from "./components/WelcomeModal";
 import { useStore } from "./components/StoreProvider";
 import styles from "./page.module.css";
 import { Item, Location, Subcategory } from "./lib/definitions";
@@ -14,12 +15,21 @@ import { Item, Location, Subcategory } from "./lib/definitions";
 export default function Home() {
   const { itemsByStorageArea, locations, subcategories, refreshData } = useStore();
   const [editingItem, setEditingItem] = useState<Item | null>(null);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [selectedStorageArea, setSelectedStorageArea] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [modalLocations, setModalLocations] = useState<Location[]>([]);
   const [filteredLocations, setFilteredLocations] = useState<Location[]>([]);
   const [filteredSubcategories, setFilteredSubcategories] = useState<Subcategory[]>([]);
   const addItemFormRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Check if there are any storage areas. If not, show the welcome modal.
+    // The key of itemsByStorageArea is the storage area id.
+    if (Object.keys(itemsByStorageArea).length === 0) {
+      setShowWelcomeModal(true);
+    }
+  }, [itemsByStorageArea]);
 
   useEffect(() => {
     if (editingItem && selectedStorageArea === editingItem.storage_area_id) {
@@ -58,6 +68,7 @@ export default function Home() {
 
   return (
     <main className={styles.container}>
+      {showWelcomeModal && <WelcomeModal onClose={() => setShowWelcomeModal(false)} />}
       {editingItem && (
         <EditItemModal
           item={editingItem}
@@ -87,8 +98,10 @@ export default function Home() {
           />
         </div>
         <div>
-          <ManageStorageAreas />
-          <ManageLocations />
+          <ManageStorageAreas variant="front-page" />
+          <div className={styles.locationsContainer}>
+            <ManageLocations variant="front-page" />
+          </div>
         </div>
       </div>
     </main>

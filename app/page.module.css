@@ -15,3 +15,7 @@
     grid-template-columns: 2fr 1fr;
   }
 }
+
+.locationsContainer {
+  margin-top: 1.5rem;
+}

@@ -3,15 +3,22 @@
 import { useState } from "react";
 import { useStore } from "./StoreProvider";
 import EditStorageAreaModal from "./EditStorageAreaModal";
-import styles from "./ManageStorageAreas.module.css";
+import stylesDefault from "./Management.module.css";
+import stylesFrontPage from "./FrontPageManagement.module.css";
 import { StorageArea } from "@/app/lib/definitions";
 
-export default function ManageStorageAreas() {
+interface ManageStorageAreasProps {
+  variant?: 'default' | 'front-page';
+}
+
+export default function ManageStorageAreas({ variant = 'default' }: ManageStorageAreasProps) {
+  const styles = variant === 'front-page' ? stylesFrontPage : stylesDefault;
   const { storageAreas, refreshData } = useStore();
   const [newStorageArea, setNewStorageArea] = useState("");
   const [editingStorageArea, setEditingStorageArea] = useState<StorageArea | null>(null);
 
-  async function addStorageArea() {
+  async function addStorageArea(e: React.FormEvent) {
+    e.preventDefault();
     if (newStorageArea.trim() === "") return;
     await fetch("/api/storage-areas", {
       method: "POST",
@@ -22,34 +29,77 @@ export default function ManageStorageAreas() {
     refreshData();
   }
 
+  async function deleteStorageArea(id: string) {
+    if (!confirm("Are you sure you want to delete this storage area?")) return;
+    await fetch("/api/storage-areas", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    refreshData();
+  }
+
   return (
-    <div className={styles.card}>
-      <h2 className={styles.title}>Manage Storage Areas</h2>
-      <div className={styles.form}>
+    <div className={styles.container}>
+      {variant === 'front-page' ? (
+        <h2 className={styles.title}>Manage Storage Areas</h2>
+      ) : (
+        <h1 className={styles.title}>Manage Storage Areas</h1>
+      )}
+      <form className={styles.addForm} onSubmit={addStorageArea}>
         <input
           type="text"
           value={newStorageArea}
           onChange={(e) => setNewStorageArea(e.target.value)}
-          placeholder="New storage area"
+          placeholder={variant === 'front-page' ? "New storage area" : "Enter storage area name..."}
           className={styles.input}
+          required
         />
-        <button onClick={addStorageArea} className={styles.button}>
-          Add
+        <button type="submit" className={styles.addButton}>
+          {variant === 'front-page' ? "Add" : "Add Storage Area"}
         </button>
-      </div>
-      <ul className={styles.list}>
-        {storageAreas.map((area) => (
-          <li key={area.id} className={styles.listItem}>
-            <span>{area.name}</span>
-            <button onClick={() => setEditingStorageArea(area)} className={styles.editButton}>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
-                <path fillRule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clipRule="evenodd" />
-              </svg>
-            </button>
-          </li>
-        ))}
-      </ul>
+      </form>
+      {variant === 'front-page' ? (
+        <ul className={styles.list}>
+          {storageAreas.map((area) => (
+            <li key={area.id} className={styles.listItem}>
+              <span className={styles.listItemName}>{area.name}</span>
+              <button
+                onClick={() => setEditingStorageArea(area)}
+                className={styles.editButton}
+              >
+                Edit
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className={styles.list}>
+          <div className={styles.card}>
+            <ul className={styles.itemList}>
+              {storageAreas.map((area) => (
+                <li key={area.id} className={styles.listItem}>
+                  <span className={styles.listItemName}>{area.name}</span>
+                  <div className={styles.buttonContainer}>
+                    <button
+                      onClick={() => setEditingStorageArea(area)}
+                      className={styles.editButton}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => deleteStorageArea(area.id)}
+                      className={styles.deleteButton}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
       {editingStorageArea && (
         <EditStorageAreaModal
           area={editingStorageArea}

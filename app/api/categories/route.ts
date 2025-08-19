@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(newCategory.rows[0], { status: 201 });
   } catch (error) {
     console.error('Error creating category:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error', details: (error as Error).message }, { status: 500 });
   }
 }
 
@@ -68,7 +68,7 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json(result.rows[0]);
   } catch (error) {
     console.error('Error updating category:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error', details: (error as Error).message }, { status: 500 });
   }
 }
 
@@ -106,6 +106,6 @@ export async function DELETE(request: NextRequest) {
   } catch (error) {
     await db.query('ROLLBACK');
     console.error('Error deleting category:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error', details: (error as Error).message }, { status: 500 });
   }
 }

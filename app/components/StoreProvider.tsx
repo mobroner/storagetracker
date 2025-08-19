@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { User, ItemsByStorageArea, StorageArea, Location, Category, Subcategory, Tag } from "@/app/lib/definitions";
 
 interface StoreContextType {
@@ -51,12 +51,6 @@ export function StoreProvider({
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(initialData.user);
 
-  useEffect(() => {
-    if (user) {
-      refreshData();
-    }
-  }, [user]);
-
   const login = (userData: User) => {
     setUser(userData);
   };
@@ -65,7 +59,7 @@ export function StoreProvider({
     setUser(null);
   };
 
-  const refreshData = async () => {
+  const refreshData = useCallback(async () => {
     setLoading(true);
     const [itemsRes, storageAreasRes, locationsRes, categoriesRes, subcategoriesRes, tagsRes] = await Promise.all([
       fetch("/api/items"),
@@ -92,7 +86,13 @@ export function StoreProvider({
     setSubcategories(subcategoriesData);
     setTags(tagsData);
     setLoading(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      refreshData();
+    }
+  }, [user, refreshData]);
 
   return (
     <StoreContext.Provider

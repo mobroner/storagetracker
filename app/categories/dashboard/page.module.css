@@ -1,0 +1,57 @@
+.container {
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.container h1 {
+  margin-bottom: 2rem;
+  color: rgb(var(--foreground));
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.statCard {
+  background-color: rgb(var(--card-background));
+  border: 1px solid rgb(var(--card-border));
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+
+.statCard h2 {
+  margin: 0 0 1rem 0;
+  color: rgb(var(--foreground));
+  font-size: 1.25rem;
+}
+
+.statNumber {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: rgb(var(--primary));
+  margin: 0.5rem 0;
+}
+
+.itemList, .categoryList {
+  margin-top: 1rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.itemRow, .categoryRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgb(var(--card-border));
+}
+
+.itemRow:last-child, .categoryRow:last-child {
+  border-bottom: none;
+}
+
+.itemRow span, .categoryRow span {
+  color: rgb(var(--foreground));
+}

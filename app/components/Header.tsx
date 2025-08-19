@@ -81,6 +81,15 @@ export default function Header() {
             Inventory List
           </Link>
           <div className={styles.navSection}>
+            <h4 className={styles.navHeader}>Categories</h4>
+            <Link href="/categories/view" onClick={toggleMenu} className={styles.subLink}>
+              View Categories
+            </Link>
+            <Link href="/categories/dashboard" onClick={toggleMenu} className={styles.subLink}>
+              Dashboard
+            </Link>
+          </div>
+          <div className={styles.navSection}>
             <h4 className={styles.navHeader}>Manage</h4>
             <Link href="/manage/storage-areas" onClick={toggleMenu} className={styles.subLink}>
               Storage Areas

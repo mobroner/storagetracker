@@ -1,0 +1,164 @@
+.container {
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pageTitle {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: rgb(var(--foreground));
+}
+
+.filterCard {
+  background-color: rgb(var(--card-background));
+  border: 1px solid rgb(var(--card-border));
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.filterCard h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  color: rgb(var(--foreground));
+}
+
+.filterControls {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filterGroup {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filterGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: rgb(var(--foreground));
+}
+
+.filterGroup select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid rgb(var(--card-border));
+  border-radius: 0.25rem;
+  background-color: rgb(var(--background));
+  color: rgb(var(--foreground));
+}
+
+.filterGroup select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.categoryList {
+  background-color: rgb(var(--card-background));
+  border: 1px solid rgb(var(--card-border));
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.categorySection {
+  border-bottom: 1px solid rgb(var(--card-border));
+}
+
+.categorySection:last-child {
+  border-bottom: none;
+}
+
+.categoryHeader {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  margin: 0;
+  cursor: pointer;
+  background-color: rgb(var(--card-background));
+  font-size: 1.25rem;
+  color: rgb(var(--foreground));
+  user-select: none;
+}
+
+.categoryHeader svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.5rem;
+  transition: transform 0.2s;
+}
+
+.categoryHeader.open svg {
+  transform: rotate(90deg);
+}
+
+.subcategories {
+  border-top: 1px solid rgb(var(--card-border));
+}
+
+.subcategoryGroup {
+  padding: 1rem;
+  border-bottom: 1px solid rgb(var(--card-border));
+}
+
+.subcategoryGroup:last-child {
+  border-bottom: none;
+}
+
+.subcategoryTitle {
+  margin: 0 0 1rem 0;
+  color: rgb(var(--foreground));
+  font-size: 1.1rem;
+}
+
+.itemList {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.itemRow {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-bottom: 1px solid rgb(var(--card-border));
+  align-items: center;
+}
+
+.itemRow:last-child {
+  border-bottom: none;
+}
+
+.itemHeader {
+  font-weight: bold;
+  background-color: rgba(var(--card-border), 0.1);
+}
+
+.itemCell {
+  color: rgb(var(--foreground));
+}
+
+@media (max-width: 768px) {
+  .itemRow {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+
+  .itemHeader {
+    display: none;
+  }
+
+  .itemCell {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .itemCell::before {
+    content: attr(data-label);
+    font-weight: bold;
+  }
+}

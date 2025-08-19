@@ -1,0 +1,116 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: rgb(var(--background));
+}
+
+.card {
+  width: 100%;
+  max-width: 28rem;
+  padding: 2.5rem;
+  background-color: rgb(var(--card-background));
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  border: 1px solid rgb(var(--card-border));
+  margin: 2rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  color: rgb(var(--foreground));
+  margin-bottom: 1.5rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgb(var(--secondary));
+}
+
+.input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgb(var(--card-border));
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  background-color: rgb(var(--background));
+  color: rgb(var(--foreground));
+  transition: box-shadow 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(var(--accent-light), 0.5);
+}
+
+.submitButton {
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  margin-top: 1.5rem;
+  background-color: rgb(var(--primary));
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.submitButton:hover {
+  background-color: rgb(55 65 81);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background-color: rgb(220 38 38 / 0.1);
+  color: rgb(220 38 38);
+  border-radius: 0.375rem;
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+.signInLink {
+  display: block;
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: rgb(var(--secondary));
+}
+
+.signInLink a {
+  color: rgb(var(--accent));
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.signInLink a:hover {
+  text-decoration: underline;
+}

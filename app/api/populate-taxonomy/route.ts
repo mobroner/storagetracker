@@ -25,35 +25,108 @@ const taxonomyData: { [key: string]: string[] } = {
 };
 
 async function clearTaxonomyForUser(userId: string) {
-  await db.query('DELETE FROM tags WHERE user_id = $1', [userId]);
-  await db.query('DELETE FROM subcategories WHERE user_id = $1', [userId]);
-  await db.query('DELETE FROM categories WHERE user_id = $1', [userId]);
-  console.log(`Cleared existing taxonomy data for user ${userId}`);
+  // Begin a transaction to ensure data consistency
+  await db.query('BEGIN');
+  try {
+    // Only clear if data exists for this user
+    const existingData = await db.query(
+      'SELECT COUNT(*) FROM categories WHERE user_id = $1',
+      [userId]
+    );
+    
+    if (existingData.rows[0].count > 0) {
+      await db.query('DELETE FROM tags WHERE user_id = $1', [userId]);
+      await db.query('DELETE FROM subcategories WHERE user_id = $1', [userId]);
+      await db.query('DELETE FROM categories WHERE user_id = $1', [userId]);
+      console.log(`Cleared existing taxonomy data for user ${userId}`);
+    }
+    await db.query('COMMIT');
+  } catch (error) {
+    await db.query('ROLLBACK');
+    throw error;
+  }
 }
 
 async function populateTaxonomyForUser(userId: string) {
-  for (const categoryName in taxonomyData) {
-    const categoryResult = await db.query(
-      'INSERT INTO categories (name, user_id) VALUES ($1, $2) RETURNING id',
-      [categoryName, userId]
+  // Begin a transaction to ensure data consistency
+  await db.query('BEGIN');
+  try {
+    // First check if the user exists
+    const userExists = await db.query(
+      'SELECT id FROM users WHERE id = $1',
+      [userId]
     );
-    const categoryId = categoryResult.rows[0].id;
 
-    const subcategories = taxonomyData[categoryName];
-    for (const subcategoryName of subcategories) {
-      await db.query(
-        'INSERT INTO subcategories (name, category_id, user_id) VALUES ($1, $2, $3)',
-        [subcategoryName, categoryId, userId]
-      );
+    if (userExists.rows.length === 0) {
+      throw new Error('User not found');
+    }
+
+    // Check if user already has taxonomy data
+    const existingCategories = await db.query(
+      'SELECT COUNT(*) FROM categories WHERE user_id = $1',
+      [userId]
+    );
+
+    // Only proceed if user has no existing categories
+    if (parseInt(existingCategories.rows[0].count) === 0) {
+      for (const categoryName in taxonomyData) {
+        const categoryResult = await db.query(
+          'INSERT INTO categories (name, user_id) VALUES ($1, $2) RETURNING id',
+          [categoryName, userId]
+        );
+        const categoryId = categoryResult.rows[0].id;
+
+        const subcategories = taxonomyData[categoryName];
+        for (const subcategoryName of subcategories) {
+          await db.query(
+            'INSERT INTO subcategories (name, category_id, user_id) VALUES ($1, $2, $3)',
+            [subcategoryName, categoryId, userId]
+          );
+        }
+      }
+      console.log(`Populated new taxonomy data for user ${userId}`);
+    } else {
+      console.log(`User ${userId} already has taxonomy data`);
+    }
+    
+    await db.query('COMMIT');
+  } catch (error) {
+    await db.query('ROLLBACK');
+    throw error;
     }
   }
-  console.log(`Populated new taxonomy data for user ${userId}`);
 }
 
-export async function POST() {
-  const userId = await getUserId();
+export async function POST(request: Request) {
+  let userId;
+  
+  // Try to get userId from request body (for new registrations)
+  try {
+    const body = await request.json();
+    if (body.userId) {
+      userId = body.userId;
+    }
+  } catch (e) {
+    // If parsing fails, continue to try getting userId from session
+  }
+
+  // If no userId in request body, try to get it from session
+  if (!userId) {
+    userId = await getUserId();
+  }
+
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  
+  // Verify the user exists
+  const userExists = await db.query(
+    'SELECT id FROM users WHERE id = $1',
+    [userId]
+  );
+
+  if (userExists.rows.length === 0) {
+    return NextResponse.json({ error: 'User not found' }, { status: 404 });
   }
 
   try {

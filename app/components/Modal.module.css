@@ -8,20 +8,23 @@
 }
 
 .modal {
-  background-color: rgb(var(--background));
+  background-color: rgb(250 250 249);
   color: rgb(var(--foreground));
   padding: 1.5rem;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
+  border: 1px solid rgb(229 231 235);
 }
 
 .modalHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgb(var(--card-border));
 }
 
 .title {

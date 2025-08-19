@@ -1,0 +1,133 @@
+"use client";
+
+import { useState, useMemo, useEffect } from "react";
+import { useStore } from "../../components/StoreProvider";
+import styles from "./page.module.css";
+import { Item } from "../../lib/definitions";
+
+export default function CategoryView() {
+  const { categories, subcategories, itemsByStorageArea, storageAreas, locations } = useStore();
+  
+  const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({});
+
+  useEffect(() => {
+    const newSections: { [key: string]: boolean } = {};
+    categories.forEach(category => {
+      newSections[category.id] = true;
+    });
+    setOpenSections(newSections);
+  }, [categories]);
+
+  const toggleSection = (categoryId: string) => {
+    setOpenSections(prev => ({ ...prev, [categoryId]: !prev[categoryId] }));
+  };
+
+  const getLocationName = (item: Item) => {
+    const storageArea = storageAreas.find(sa => sa.id === item.storage_area_id);
+    const location = locations.find(l => l.id === item.location_id);
+    return `${storageArea?.name || 'Unknown Storage'} ${location ? `- ${location.location_name}` : ''}`;
+  };
+
+  const organizedItems = useMemo(() => {
+    const allItems: Item[] = [];
+    Object.values(itemsByStorageArea).forEach(locationItems => {
+      Object.values(locationItems).forEach(items => {
+        allItems.push(...items);
+      });
+    });
+
+    console.log('Total items found:', allItems.length);
+    
+    const organized: Record<string, Record<string, Item[]>> = {};
+
+    allItems.forEach(item => {
+      if (!item.category_id) return;
+      
+      if (!organized[item.category_id]) {
+        organized[item.category_id] = {};
+      }
+
+      const subcategoryKey = item.subcategory_id || 'uncategorized';
+      
+      if (!organized[item.category_id][subcategoryKey]) {
+        organized[item.category_id][subcategoryKey] = [];
+      }
+
+      organized[item.category_id][subcategoryKey].push(item);
+    });
+
+    console.log('Organized structure:', organized);
+    return organized;
+  }, [itemsByStorageArea]);
+
+  return (
+    <div className={styles.container}>
+      <div style={{ marginBottom: '20px' }}>
+        <h3>Debug Information</h3>
+        <p>Total Categories: {categories.length}</p>
+        <p>Total Subcategories: {subcategories.length}</p>
+        <p>Categories with Items: {Object.keys(organizedItems).length}</p>
+      </div>
+
+      <div className={styles.categoryList}>
+        {Object.keys(organizedItems).length === 0 ? (
+          <div className={styles.noItems}>
+            <h3>No items found</h3>
+          </div>
+        ) : (
+          Object.entries(organizedItems).map(([categoryId, subcategoryGroups]) => {
+            const category = categories.find(c => c.id === categoryId);
+            if (!category) return null;
+
+            return (
+              <div key={categoryId} className={styles.categorySection}>
+                <h3
+                  className={`${styles.categoryHeader} ${openSections[categoryId] ? styles.open : ''}`}
+                  onClick={() => toggleSection(categoryId)}
+                >
+                  {category.name}
+                </h3>
+                {openSections[categoryId] && (
+                  <div className={styles.subcategories}>
+                    {Object.entries(subcategoryGroups).map(([subcategoryId, items]) => {
+                      const subcategory = subcategories.find(s => s.id === subcategoryId);
+                      const title = subcategoryId === 'uncategorized' ? 'Uncategorized' : subcategory?.name;
+
+                      return (
+                        <div key={subcategoryId} className={styles.subcategoryGroup}>
+                          <h4 className={styles.subcategoryTitle}>{title}</h4>
+                          <div className={styles.itemList}>
+                            <div className={`${styles.itemRow} ${styles.itemHeader}`}>
+                              <div className={styles.itemCell}>Item</div>
+                              <div className={styles.itemCell}>Location</div>
+                              <div className={styles.itemCell}>Quantity</div>
+                              <div className={styles.itemCell}>Added</div>
+                              <div className={styles.itemCell}>Expires</div>
+                            </div>
+                            {items.map(item => (
+                              <div key={item.id} className={styles.itemRow}>
+                                <div className={styles.itemCell}>{item.item_name}</div>
+                                <div className={styles.itemCell}>{getLocationName(item)}</div>
+                                <div className={styles.itemCell}>{item.quantity}</div>
+                                <div className={styles.itemCell}>
+                                  {new Date(item.date_added).toLocaleDateString()}
+                                </div>
+                                <div className={styles.itemCell}>
+                                  {item.expiry_date ? new Date(item.expiry_date).toLocaleDateString() : "N/A"}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+}

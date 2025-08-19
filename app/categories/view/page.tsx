@@ -11,7 +11,7 @@ export default function CategoryView() {
   useEffect(() => {
     // Ensure we have fresh data when the component mounts
     refreshData();
-  }, []);
+  }, [refreshData]);
 
   // Create maps for category and subcategory lookups
   const { categoryMap, subcategoryMap } = useMemo(() => {

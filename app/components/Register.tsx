@@ -61,7 +61,7 @@ export default function Register() {
         const { error } = await response.json();
         setError(error);
       }
-    } catch (err) {
+    } catch {
       setError("Failed to connect to the server.");
     } finally {
       setIsSubmitting(false);

@@ -105,7 +105,7 @@ export async function POST(request: Request) {
     if (body.userId) {
       userId = body.userId;
     }
-  } catch (e) {
+  } catch {
     // If parsing fails, continue to try getting userId from session
   }
 

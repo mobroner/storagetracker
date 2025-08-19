@@ -43,7 +43,7 @@ export async function DELETE(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   const userId = await getUserId();
   if (!userId) {
@@ -58,7 +58,7 @@ export async function PUT(
   try {
     const result = await db.query(
       'UPDATE categories SET name = $1 WHERE id = $2 AND user_id = $3 RETURNING *',
-      [name, params.id, userId]
+      [name, context.params.id, userId]
     );
 
     if (result.rowCount === 0) {

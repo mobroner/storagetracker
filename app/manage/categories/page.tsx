@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useStore } from '@/app/components/StoreProvider'
 import styles from '@/app/components/Management.module.css'
-import formStyles from '@/app/components/AddItemForm.module.css'
+
 import { Category } from '@/app/lib/definitions'
 import EditCategoryModal from '@/app/components/EditCategoryModal'
 
@@ -14,7 +14,7 @@ export default function ManageCategoriesPage() {
   
   useEffect(() => {
     refreshData()
-  }, [])
+  }, [refreshData])
 
   // Sort categories alphabetically
   const sortedCategories = [...categories].sort((a, b) => 

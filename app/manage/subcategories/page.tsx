@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useStore } from '@/app/components/StoreProvider'
 import styles from '@/app/components/Management.module.css'
-import { Category, Subcategory } from '@/app/lib/definitions'
+import { Subcategory } from '@/app/lib/definitions'
 
 export default function ManageSubcategoriesPage() {
   const { categories, subcategories, refreshData } = useStore()
@@ -12,7 +12,7 @@ export default function ManageSubcategoriesPage() {
   
   useEffect(() => {
     refreshData()
-  }, [])
+  }, [refreshData])
 
   // Group subcategories by category
   const subcategoriesByCategory = subcategories.reduce((acc: { [key: string]: Subcategory[] }, subcategory) => {

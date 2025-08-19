@@ -6,8 +6,13 @@ import styles from "./page.module.css";
 import { Item } from "../../lib/definitions";
 
 export default function CategoryView() {
-  const { categories, subcategories, itemsByStorageArea, storageAreas, locations } = useStore();
+  const { categories, subcategories, itemsByStorageArea, storageAreas, locations, refreshData } = useStore();
   
+  useEffect(() => {
+    // Ensure we have fresh data when the component mounts
+    refreshData();
+  }, []);
+
   // Create maps for category and subcategory lookups
   const { categoryMap, subcategoryMap } = useMemo(() => {
     const catMap = new Map();
@@ -42,8 +47,19 @@ export default function CategoryView() {
 
   const getLocationName = (item: Item) => {
     const storageArea = storageAreas.find(sa => sa.id === item.storage_area_id);
-    const location = locations.find(l => l.id === item.location_id);
-    return `${storageArea?.name || 'Unknown Storage'} ${location ? `- ${location.location_name}` : ''}`;
+    if (!storageArea) {
+      console.log('Storage area not found for ID:', item.storage_area_id);
+      console.log('Available storage areas:', storageAreas);
+      return 'Unknown Storage';
+    }
+    
+    const location = item.location_id ? locations.find(l => l.id === item.location_id) : null;
+    if (item.location_id && !location) {
+      console.log('Location not found for ID:', item.location_id);
+      console.log('Available locations:', locations);
+    }
+
+    return location ? `${storageArea.name} - ${location.location_name}` : storageArea.name;
   };
 
   const organizedItems = useMemo(() => {

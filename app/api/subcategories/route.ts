@@ -12,13 +12,18 @@ export async function GET(request: Request) {
   const categoryId = searchParams.get('categoryId');
 
   try {
-    let subcategories;
+    let result;
     if (categoryId) {
-      subcategories = await db.query('SELECT * FROM subcategories WHERE user_id = $1 AND category_id = $2', [userId, categoryId]);
+      result = await db.query('SELECT * FROM subcategories WHERE user_id = $1 AND category_id = $2', [userId, categoryId]);
     } else {
-      subcategories = await db.query('SELECT * FROM subcategories WHERE user_id = $1', [userId]);
+      result = await db.query('SELECT * FROM subcategories WHERE user_id = $1', [userId]);
     }
-    return NextResponse.json(subcategories.rows);
+    const subcategories = result.rows.map(row => ({
+      ...row,
+      id: String(row.id),
+      category_id: String(row.category_id)
+    }));
+    return NextResponse.json(subcategories);
   } catch (error) {
     console.error('Error fetching subcategories:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

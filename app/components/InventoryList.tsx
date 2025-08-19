@@ -129,8 +129,14 @@ export default function InventoryList({
                         <div className={styles.itemCell}>Actions</div>
                       </div>
                       {items.map((item: Item) => {
-                        const category = categories.find(c => c.id === item.category_id)?.name;
-                        const subcategory = subcategories.find(s => s.id === item.subcategory_id)?.name;
+                        const category = categories.find(c => String(c.id) === String(item.category_id))?.name;
+                        const subcategory = subcategories.find(s => String(s.id) === String(item.subcategory_id))?.name;
+
+                        console.log('Item category matching:', {
+                          itemCategoryId: item.category_id,
+                          availableCategoryIds: categories.map(c => c.id),
+                          match: category
+                        });
 
                         return (
                           <div key={item.id} className={styles.itemRow}>

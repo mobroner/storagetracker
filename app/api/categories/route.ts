@@ -9,8 +9,12 @@ export async function GET() {
   }
 
   try {
-    const categories = await db.query('SELECT * FROM categories WHERE user_id = $1', [userId]);
-    return NextResponse.json(categories.rows);
+    const result = await db.query('SELECT * FROM categories WHERE user_id = $1', [userId]);
+    const categories = result.rows.map(row => ({
+      ...row,
+      id: String(row.id)
+    }));
+    return NextResponse.json(categories);
   } catch (error) {
     console.error('Error fetching categories:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

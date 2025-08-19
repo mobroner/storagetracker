@@ -84,7 +84,7 @@ const AddItemForm = forwardRef<HTMLDivElement, AddItemFormProps>(
       <div className={styles.card} ref={ref}>
         <h2 className={styles.title}>Add New Item</h2>
         <p className={styles.description}>
-          Add a new food item to your freezer inventory.
+          Add an item to your inventory.
         </p>
         <form onSubmit={handleSubmit} className={styles.form}>
           <div>

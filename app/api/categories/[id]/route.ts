@@ -1,16 +1,11 @@
 import { NextResponse } from 'next/server';
+import { type NextRequest } from 'next/server';
 import { db } from '@/app/lib/db';
 import { getUserId } from '@/app/lib/auth';
 
-type Props = {
-  params: {
-    id: string
-  }
-};
-
 export async function DELETE(
-  request: Request,
-  props: Props
+  req: NextRequest,
+  { params }: { params: { id: string } }
 ) {
   const userId = await getUserId();
   if (!userId) {
@@ -24,13 +19,13 @@ export async function DELETE(
     // Delete any subcategories first (will cascade to items)
     await db.query(
       'DELETE FROM subcategories WHERE category_id = $1 AND EXISTS (SELECT 1 FROM categories WHERE id = $1 AND user_id = $2)',
-      [props.params.id, userId]
+      [params.id, userId]
     );
 
     // Then delete the category itself
     const result = await db.query(
       'DELETE FROM categories WHERE id = $1 AND user_id = $2 RETURNING *',
-      [props.params.id, userId]
+      [params.id, userId]
     );
 
     await db.query('COMMIT');
@@ -48,15 +43,15 @@ export async function DELETE(
 }
 
 export async function PUT(
-  request: Request,
-  props: Props
+  req: NextRequest,
+  { params }: { params: { id: string } }
 ) {
   const userId = await getUserId();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { name } = await request.json();
+  const { name } = await req.json();
   if (!name) {
     return NextResponse.json({ error: 'Name is required' }, { status: 400 });
   }
@@ -64,7 +59,7 @@ export async function PUT(
   try {
     const result = await db.query(
       'UPDATE categories SET name = $1 WHERE id = $2 AND user_id = $3 RETURNING *',
-      [name, props.params.id, userId]
+      [name, params.id, userId]
     );
 
     if (result.rowCount === 0) {

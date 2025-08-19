@@ -93,7 +93,6 @@ async function populateTaxonomyForUser(userId: string) {
   } catch (error) {
     await db.query('ROLLBACK');
     throw error;
-    }
   }
 }
 

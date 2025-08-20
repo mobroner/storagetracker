@@ -1,120 +1,61 @@
-import { useState, useEffect } from 'react';
-import styles from './Modal.module.css';
-import formStyles from './ModalForm.module.css';
+'use client'
 
-interface Category {
-  id: string;
-  name: string;
-  description?: string;
-}
-
-interface Subcategory {
-  id?: string;
-  name: string;
-  description?: string;
-  categoryId: string;
-}
+import { useState } from 'react'
+import styles from './EditModal.module.css'
+import { Subcategory } from '@/app/lib/definitions'
 
 interface EditSubcategoryModalProps {
-  subcategory?: Subcategory | null;
-  categories: Category[];
-  onSave: (subcategory: Subcategory) => void;
-  onClose: () => void;
+  subcategory: Subcategory
+  onClose: () => void
+  onSave: (name: string) => Promise<void>
 }
 
-export default function EditSubcategoryModal({ 
-  subcategory, 
-  categories,
-  onSave, 
-  onClose 
-}: EditSubcategoryModalProps) {
-  const [formData, setFormData] = useState<Subcategory>({
-    name: '',
-    description: '',
-    categoryId: categories[0]?.id || ''
-  });
+export default function EditSubcategoryModal({ subcategory, onClose, onSave }: EditSubcategoryModalProps) {
+  const [name, setName] = useState(subcategory.name)
 
-  useEffect(() => {
-    if (subcategory) {
-      setFormData({
-        name: subcategory.name,
-        description: subcategory.description || '',
-        categoryId: subcategory.categoryId
-      });
-    }
-  }, [subcategory]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSave(formData);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!name.trim() || name.trim() === subcategory.name) return
+    await onSave(name.trim())
+  }
 
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modal}>
-        <h2>{subcategory ? 'Edit Subcategory' : 'Add New Subcategory'}</h2>
-        <form onSubmit={handleSubmit} className={formStyles.form}>
-          <div className={formStyles.formGroup}>
-            <label htmlFor="name">Name:</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className={formStyles.input}
-            />
-          </div>
-          <div className={formStyles.formGroup}>
-            <label htmlFor="categoryId">Category:</label>
-            <select
-              id="categoryId"
-              name="categoryId"
-              value={formData.categoryId}
-              onChange={handleChange}
-              required
-              className={formStyles.input}
-            >
-              {categories.map(category => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className={formStyles.formGroup}>
-            <label htmlFor="description">Description:</label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className={formStyles.input}
-            />
-          </div>
-          <div className={formStyles.buttonGroup}>
-            <button type="submit" className={formStyles.submitButton}>
-              {subcategory ? 'Save Changes' : 'Add Subcategory'}
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className={formStyles.cancelButton}
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
+        <div className={styles.modalHeader}>
+          <h2 className={styles.title}>Edit Subcategory</h2>
+          <button className={styles.closeButton} onClick={onClose}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <div className={styles.modalBody}>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md"
+            placeholder="Enter subcategory name"
+            required
+          />
+        </div>
+        <div className={styles.footer}>
+          <button
+            onClick={onClose}
+            className={`${styles.button} ${styles.cancelButton}`}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => onSave(name)}
+            className={`${styles.button} ${styles.saveButton}`}
+          >
+            Save Changes
+          </button>
+        </div>
       </div>
     </div>
-  );
+  )
 }

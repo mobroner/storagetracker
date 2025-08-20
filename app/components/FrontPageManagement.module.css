@@ -27,7 +27,7 @@
 }
 
 .addButton {
-  background-color: #374151;
+  background-color: rgb(var(--primary));
   color: white;
   border: none;
   padding: 10px 16px;
@@ -60,11 +60,11 @@
   cursor: pointer;
   transition: background-color 0.2s;
   color: white;
-  background-color: #374151;
+  background-color: rgb(var(--primary));
 }
 
 .editButton:hover {
-  background-color: #4b5563;
+  background-color: rgb(var(--primary));
 }
 
 .checkboxContainer {

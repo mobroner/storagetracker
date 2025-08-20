@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useStore } from "./StoreProvider";
 import styles from "./AddItemForm.module.css";
-import modalStyles from "./Modal.module.css";
+import modalStyles from "./EditModal.module.css";
 import { Item, Location, Subcategory, Category, StorageArea } from "@/app/lib/definitions";
 
 interface EditItemModalProps {
@@ -122,10 +122,10 @@ export default function EditItemModal({ item, onClose, onSave }: EditItemModalPr
       quantity: parseInt(formData.quantity, 10),
       dateAdded: formData.dateAdded,
       expiryDate: formData.expiryDate || null,
-      storageAreaId: formData.storageAreaId,
-      locationId: formData.locationId || null,
-      categoryId: formData.categoryId || null,
-      subcategoryId: formData.subcategoryId || null,
+      storageAreaId: parseInt(formData.storageAreaId, 10),
+      locationId: formData.locationId ? parseInt(formData.locationId, 10) : null,
+      categoryId: formData.categoryId ? parseInt(formData.categoryId, 10) : null,
+      subcategoryId: formData.subcategoryId ? parseInt(formData.subcategoryId, 10) : null,
     };
 
     await fetch("/api/items", {
@@ -158,7 +158,7 @@ export default function EditItemModal({ item, onClose, onSave }: EditItemModalPr
   }
 
   return (
-    <div className={modalStyles.overlay}>
+    <div className={modalStyles.modalOverlay}>
       <div className={modalStyles.modal}>
         <div className={modalStyles.modalHeader}>
           <h2 className={modalStyles.title}>Edit Item</h2>

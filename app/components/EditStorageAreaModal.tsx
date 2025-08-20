@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import styles from "./Modal.module.css";
+import styles from "./EditModal.module.css";
 
 interface StorageArea {
   id: string;
@@ -26,9 +26,9 @@ export default function EditStorageAreaModal({
   }
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.card}>
-        <div className={styles.header}>
+    <div className={styles.modalOverlay}>
+      <div className={styles.modal}>
+        <div className={styles.modalHeader}>
           <h2 className={styles.title}>Edit Storage Area</h2>
           <button onClick={onClose} className={styles.closeButton}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -36,7 +36,7 @@ export default function EditStorageAreaModal({
             </svg>
           </button>
         </div>
-        <div className={styles.content}>
+        <div className={styles.modalBody}>
           <input
             type="text"
             value={name}

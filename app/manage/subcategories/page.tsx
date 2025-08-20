@@ -3,12 +3,20 @@
 import { useEffect, useState } from 'react'
 import { useStore } from '@/app/components/StoreProvider'
 import styles from '@/app/components/Management.module.css'
-import { Subcategory } from '@/app/lib/definitions'
+import inventoryStyles from '@/app/components/InventoryList.module.css'
+import { Subcategory, Category } from '@/app/lib/definitions'
+import EditSubcategoryModal from '@/app/components/EditSubcategoryModal'
 
 export default function ManageSubcategoriesPage() {
   const { categories, subcategories, refreshData } = useStore()
   const [selectedCategory, setSelectedCategory] = useState<string>('')
   const [newSubcategoryName, setNewSubcategoryName] = useState<string>('')
+  const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({})
+  const [editingSubcategory, setEditingSubcategory] = useState<Subcategory | null>(null)
+
+  const toggleCategory = (categoryId: string) => {
+    setOpenCategories(prev => ({ ...prev, [categoryId]: !prev[categoryId] }))
+  }
   
   useEffect(() => {
     refreshData()
@@ -45,9 +53,12 @@ export default function ManageSubcategoriesPage() {
     }
   }
 
-  const handleEdit = async (subcategory: Subcategory) => {
-    const newName = prompt('Enter new name:', subcategory.name)
-    if (!newName || newName === subcategory.name) return
+  const handleEdit = (subcategory: Subcategory) => {
+    setEditingSubcategory(subcategory)
+  }
+
+  const handleSaveEdit = async (name: string) => {
+    if (!editingSubcategory || name === editingSubcategory.name) return
 
     const response = await fetch('/api/subcategories', {
       method: 'PUT',
@@ -55,12 +66,13 @@ export default function ManageSubcategoriesPage() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        id: subcategory.id,
-        name: newName.trim(),
+        id: editingSubcategory.id,
+        name: name.trim(),
       }),
     })
 
     if (response.ok) {
+      setEditingSubcategory(null)
       refreshData()
     }
   }
@@ -114,32 +126,51 @@ export default function ManageSubcategoriesPage() {
 
       <div className={styles.list}>
         {categories.map((category) => (
-          <div key={category.id} className={styles.card}>
-            <h2 className={styles.categoryTitle}>{category.name}</h2>
-            <ul className={styles.itemList}>
-              {subcategoriesByCategory[String(category.id)]?.map((subcategory) => (
-                <li key={subcategory.id} className={styles.listItem}>
-                  <span className={styles.listItemName}>{subcategory.name}</span>
-                  <div className={styles.buttonContainer}>
-                    <button 
-                      onClick={() => handleEdit(subcategory)} 
-                      className={styles.editButton}
-                    >
-                      Edit
-                    </button>
-                    <button 
-                      onClick={() => handleDelete(subcategory)} 
-                      className={styles.deleteButton}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
+          <div key={category.id} className={inventoryStyles.storageArea}>
+            <h3
+              className={`${inventoryStyles.storageAreaHeader} ${openCategories[category.id] ? inventoryStyles.open : ''}`}
+              onClick={() => toggleCategory(String(category.id))}
+            >
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+              {category.name}
+            </h3>
+            {openCategories[category.id] && (
+              <div className={styles.card}>
+                <ul className={styles.itemList}>
+                  {subcategoriesByCategory[String(category.id)]?.map((subcategory) => (
+                    <li key={subcategory.id} className={styles.listItem}>
+                      <span className={styles.listItemName}>{subcategory.name}</span>
+                      <div className={styles.buttonContainer}>
+                        <button 
+                          onClick={() => handleEdit(subcategory)} 
+                          className={styles.editButton}
+                        >
+                          Edit
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(subcategory)} 
+                          className={styles.deleteButton}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         ))}
       </div>
+      {editingSubcategory && (
+        <EditSubcategoryModal
+          subcategory={editingSubcategory}
+          onClose={() => setEditingSubcategory(null)}
+          onSave={async (name) => handleSaveEdit(name)}
+        />
+      )}
     </div>
   )
 }

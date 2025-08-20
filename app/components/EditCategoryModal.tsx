@@ -1,8 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import styles from './Modal.module.css'
-import formStyles from './AddItemForm.module.css'
+import styles from './EditModal.module.css'
 import { Category } from '@/app/lib/definitions'
 
 interface EditCategoryModalProps {
@@ -21,7 +20,7 @@ export default function EditCategoryModal({ category, onClose, onSave }: EditCat
   }
 
   return (
-    <div className={styles.overlay}>
+    <div className={styles.modalOverlay}>
       <div className={styles.modal}>
         <div className={styles.modalHeader}>
           <h2 className={styles.title}>Edit Category</h2>
@@ -32,38 +31,30 @@ export default function EditCategoryModal({ category, onClose, onSave }: EditCat
           </button>
         </div>
         
-        <form onSubmit={handleSubmit} className={styles.modalBody}>
-          <div className={formStyles.formGroup}>
-            <label htmlFor="editCategoryName" className={formStyles.label}>
-              Category Name
-            </label>
-            <input
-              type="text"
-              id="editCategoryName"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className={formStyles.input}
-              placeholder="Enter category name"
-              required
-            />
-          </div>
-
-          <div className={formStyles.actions}>
-            <button 
-              type="button" 
-              onClick={onClose}
-              className={formStyles.cancelButton}
-            >
-              Cancel
-            </button>
-            <button 
-              type="submit" 
-              className={formStyles.submitButton}
-            >
-              Save Changes
-            </button>
-          </div>
-        </form>
+        <div className={styles.modalBody}>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md"
+            placeholder="Enter category name"
+            required
+          />
+        </div>
+        <div className={styles.footer}>
+          <button
+            onClick={onClose}
+            className={`${styles.button} ${styles.cancelButton}`}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => onSave(name)}
+            className={`${styles.button} ${styles.saveButton}`}
+          >
+            Save Changes
+          </button>
+        </div>
       </div>
     </div>
   )

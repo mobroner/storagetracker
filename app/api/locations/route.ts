@@ -36,7 +36,7 @@ export async function GET() {
   const locations: Location[] = result.rows.map((row: LocationFromDB) => ({
     ...row,
     id: String(row.id),
-    storage_area_ids: row.storage_area_ids.map(String),
+    storage_area_ids: row.storage_area_ids.filter(id => id !== null).map(String),
   }));
 
   console.log('API /api/locations GET locations:', JSON.stringify(locations, null, 2));
@@ -73,6 +73,8 @@ export async function PUT(request: NextRequest) {
   const data = await request.json();
   const { id, locationName, storageAreaIds } = data;
 
+  const validStorageAreaIds = storageAreaIds.filter((id: string | null) => id !== null && id !== 'null');
+
   await db.query(
     `UPDATE item_locations SET location_name = $1 WHERE id = $2 AND user_id = $3`,
     [locationName, id, userId]
@@ -80,7 +82,7 @@ export async function PUT(request: NextRequest) {
 
   await db.query(`DELETE FROM storage_area_locations WHERE location_id = $1`, [id]);
 
-  for (const storageAreaId of storageAreaIds) {
+  for (const storageAreaId of validStorageAreaIds) {
     await db.query(
       `INSERT INTO storage_area_locations (storage_area_id, location_id) VALUES ($1, $2)`,
       [storageAreaId, id]
